@@ -1,12 +1,16 @@
 package com.babyd.babyd.controller;
 
+import com.babyd.babyd.Constants;
 import com.babyd.babyd.models.Parent;
 import com.babyd.babyd.services.ParentService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,10 +30,7 @@ public class ParentController {
         String password = (String) ParentMap.get("password");
 
         Parent parent = parentService.registerParent(first_name, last_name, email, password);
-        Map<String, String> map = new HashMap<>();
-        map.put("message", "register successfully");
-
-        return new ResponseEntity<>(map, HttpStatus.OK);
+        return new ResponseEntity<>(generateJWTToken(parent), HttpStatus.OK);
     }
 
     @PostMapping("/login")
@@ -39,10 +40,7 @@ public class ParentController {
         String password = (String) parentMap.get("password");
         Parent parent = parentService.validateParent(email, password);
 
-        Map<String, String> map = new HashMap<>();
-        map.put("message", "login successfully");
-
-        return new ResponseEntity<>(map, HttpStatus.OK);
+        return new ResponseEntity<>(generateJWTToken(parent), HttpStatus.OK);
     }
 
     @GetMapping("/all_parents")
@@ -58,5 +56,20 @@ public class ParentController {
     {
         System.out.println("---> only for debugging, should be remove when go production");
         parentService.deleteAllParents();
+    }
+
+    private Map<String, String> generateJWTToken(Parent parent) {
+        long timestamp = System.currentTimeMillis();
+        String token = Jwts.builder().signWith(SignatureAlgorithm.HS256, Constants.API_SECRET_KEY)
+                .setIssuedAt(new Date(timestamp))
+                .setExpiration(new Date(timestamp + Constants.API_SECRET_KEY))
+                .claim("parent id", parent.getParent_id())
+                .claim("first name", parent.getFirst_name())
+                .claim("last name", parent.getLast_name())
+                .claim("email", parent.getEmail())
+                .compact();
+        Map<String, String> map = new HashMap<>();
+        map.put("token", token);
+        return map;
     }
 }
