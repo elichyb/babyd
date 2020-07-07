@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+
 public class AuthFilter extends GenericFilterBean {
 
     @Override
@@ -29,7 +30,7 @@ public class AuthFilter extends GenericFilterBean {
                 try {
                     Claims claims = Jwts.parser().setSigningKey(Constants.API_SECRET_KEY)
                             .parseClaimsJws(token).getBody(); // Getting all parent info...
-                    httpRequest.setAttribute("parent_id", Integer.parseInt(claims.get("parent_id").toString()));
+                    httpRequest.setAttribute("parent_id", Integer.parseInt(claims.get("parent id").toString()));
                 }catch (Exception e) {
                     httpResponse.sendError(HttpStatus.FORBIDDEN.value(), "invalid/expired token");
                     return;

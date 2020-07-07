@@ -30,3 +30,5 @@ create table parent_baby_role (
 
 create sequence parent_seq increment 1 start 1;
 create sequence baby_seq increment 1 start 1;
+create sequence feed_seq increment 1 start 1;
+create sequence wight_seq increment 1 start 1;
