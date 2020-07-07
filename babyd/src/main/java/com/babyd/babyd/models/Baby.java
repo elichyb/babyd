@@ -10,9 +10,9 @@ public class Baby {
     private float wight_table_id;
     private int breast_feed_table_id;
     private int formula_feed_table_id;
-    private Date baby_birth_day;
+    private String baby_birth_day;
 
-    public Baby(int id, String first_name, String last_name, int feed_type, float wight_table_id, Date baby_birth_day) {
+    public Baby(int id, String first_name, String last_name, int feed_type, float wight_table_id, String baby_birth_day) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
@@ -77,11 +77,11 @@ public class Baby {
         this.formula_feed_table_id = formula_feed_table_id;
     }
 
-    public Date getBaby_birth_day() {
+    public String getBaby_birth_day() {
         return baby_birth_day;
     }
 
-    public void setBaby_birth_day(Date baby_birth_day) {
+    public void setBaby_birth_day(String baby_birth_day) {
         this.baby_birth_day = baby_birth_day;
     }
 }

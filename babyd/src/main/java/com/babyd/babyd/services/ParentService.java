@@ -10,7 +10,6 @@ public interface ParentService {
 
     Parent registerParent(String first_name, String last_name, String email, String password) throws EtAuthException;
 
-
     List<Parent> getAllParents();
 
     void deleteAllParents();

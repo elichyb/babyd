@@ -1,5 +1,6 @@
 package com.babyd.babyd.services;
 
+import com.babyd.babyd.exceptions.EtBadBirthdayFormat;
 import com.babyd.babyd.exceptions.EtResourceFoundException;
 import com.babyd.babyd.exceptions.EtResourceNotFoundException;
 import com.babyd.babyd.models.Baby;
@@ -13,8 +14,8 @@ public interface BabyService {
 
     Baby fetchBabyById(int parent_id, int baby_id) throws EtResourceFoundException;
 
-    Baby addBaby(int user_id, int baby_id, String first_name, String last_name, int feed_type, float wight, Date birth_day)
-            throws EtResourceFoundException;
+    Baby addBaby(int parent_id, String first_name, String last_name, int feed_type, float wight, String birth_day)
+            throws EtResourceFoundException, EtBadBirthdayFormat;
 
     void removeBaby(int parent_id, int baby_id) throws EtResourceNotFoundException;
 

@@ -19,13 +19,14 @@ create table baby (
     baby_id integer  primary key not null,
     first_name varchar not null,
     last_name varchar not null,
-    birth_date date not null
+    birth_day date not null,
+    feed_type integer not null
 );
 
-create table parent_baby_role (
-    parent_id integer   not null,
+create table parent_baby (
+    parent_id integer not null,
     baby_id integer  not null,
-    role_id integer  not null
+    CONSTRAINT P_B_KEY primary key (parent_id, baby_id)
 );
 
 create sequence parent_seq increment 1 start 1;

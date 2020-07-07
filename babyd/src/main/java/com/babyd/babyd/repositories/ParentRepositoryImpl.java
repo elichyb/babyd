@@ -17,7 +17,7 @@ import java.util.List;
 @Repository
 public class ParentRepositoryImpl implements ParentRepository {
 
-    private static final String SQL_CREATE = "insert into parent (parent_id, first_name, last_name, email, password) " +
+    private static final String SQL_INSERT_TO_PARENT = "insert into parent (parent_id, first_name, last_name, email, password) " +
             "values (NEXTVAL('parent_seq'), ?, ?, ?, ?)";
     private static final String SQL_GET_ALL_PARENTS = "select *from parent";
     private static final String SQL_COUNT_BY_EMAIL = "select count(*) from parent where email=?";
@@ -35,7 +35,7 @@ public class ParentRepositoryImpl implements ParentRepository {
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(SQL_CREATE, PreparedStatement.RETURN_GENERATED_KEYS);
+                PreparedStatement ps = connection.prepareStatement(SQL_INSERT_TO_PARENT, PreparedStatement.RETURN_GENERATED_KEYS);
                 ps.setString(1, first_name);
                 ps.setString(2, last_name);
                 ps.setString(3, email);

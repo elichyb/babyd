@@ -12,7 +12,7 @@ public interface BabyRepository {
 
     Baby findById(int parent_id, int baby_id) throws EtResourceNotFoundException;
 
-    int createBaby(int parent_id, int baby_id, String first_name, String last_name, int feed_type, float wight, Date birth_day)
+    int createBaby(int parent_id, String first_name, String last_name, int feed_type, float wight, String birth_day)
             throws EtResourceFoundException;
 
     void removeBaby(int parent_id, int baby_id) throws EtResourceNotFoundException;
