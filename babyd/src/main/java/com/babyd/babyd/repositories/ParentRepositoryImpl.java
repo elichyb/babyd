@@ -12,13 +12,14 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.UUID;
 
 
 @Repository
 public class ParentRepositoryImpl implements ParentRepository {
 
     private static final String SQL_INSERT_TO_PARENT = "insert into parent (parent_id, first_name, last_name, email, password) " +
-            "values (NEXTVAL('parent_seq'), ?, ?, ?, ?)";
+            "values (gen_random_uuid(), ?, ?, ?, ?)";
     private static final String SQL_GET_ALL_PARENTS = "select *from parent";
     private static final String SQL_COUNT_BY_EMAIL = "select count(*) from parent where email=?";
     private static final String SQL_FIND_BY_PARENT_ID = "select parent_id, first_name, last_name, email, password from parent where parent_id=?";
@@ -30,7 +31,7 @@ public class ParentRepositoryImpl implements ParentRepository {
     JdbcTemplate jdbcTemplate;
 
     @Override
-    public int createParent(String first_name, String last_name, String email, String password) throws EtAuthException {
+    public UUID createParent(String first_name, String last_name, String email, String password) throws EtAuthException {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(10));
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -42,7 +43,7 @@ public class ParentRepositoryImpl implements ParentRepository {
                 ps.setString(4, hashedPassword);
                 return ps;
             }, keyHolder);
-            return (Integer) keyHolder.getKeys().get("parent_id");
+            return (UUID) keyHolder.getKeys().get("parent_id");
         }
         catch ( Exception e ) {
             throw new EtAuthException("Invalid details, failed to create account");
@@ -69,7 +70,7 @@ public class ParentRepositoryImpl implements ParentRepository {
     }
 
     @Override
-    public Parent findParentById(int id) {
+    public Parent findParentById(UUID id) {
         return jdbcTemplate.queryForObject(SQL_FIND_BY_PARENT_ID, new Object[] {id}, parentRowMapper);
     }
 
@@ -100,7 +101,7 @@ public class ParentRepositoryImpl implements ParentRepository {
 
     private RowMapper<Parent> parentRowMapper = ((rs, rowNum) -> {
         return new Parent(
-                rs.getInt("parent_id"),
+                (UUID) rs.getObject("parent_id"),
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("email"),

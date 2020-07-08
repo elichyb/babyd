@@ -1,14 +1,16 @@
 package com.babyd.babyd.models;
 
 
+import java.util.UUID;
+
 public class Parent {
-    private int parent_id;
+    private UUID parent_id;
     private String first_name;
     private String last_name;
     private String email;
     private String password;
 
-    public Parent(int parent_id, String first_name, String last_name, String email, String password) {
+    public Parent(UUID parent_id, String first_name, String last_name, String email, String password) {
         this.parent_id = parent_id;
         this.first_name = first_name;
         this.last_name = last_name;
@@ -16,11 +18,11 @@ public class Parent {
         this.password = password;
     }
 
-    public int getParent_id() {
+    public UUID getParent_id() {
         return parent_id;
     }
 
-    public void setParent_id(int parent_id) {
+    public void setParent_id(UUID parent_id) {
         this.parent_id = parent_id;
     }
 

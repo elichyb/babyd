@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
@@ -29,7 +30,7 @@ public class ParentServiceImpl implements ParentService {
             throw new EtAuthException("email is in the wrong format"); // valdate email match pattern
         Integer count = parentRepository.getCountByEmail(email);
         if (count > 0) throw new EtAuthException("Email already in use");
-        int parentId = parentRepository.createParent(first_name, last_name, email, password);
+        UUID parentId = parentRepository.createParent(first_name, last_name, email, password);
         return parentRepository.findParentById(parentId);
     }
 
