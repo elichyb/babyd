@@ -77,17 +77,7 @@ public class ParentRepositoryImpl implements ParentRepository {
 
     @Override
     public List<Parent> getAllParents() {
-        return jdbcTemplate.query(
-                                SQL_GET_ALL_PARENTS, parentRowMapper
-//                                (rs, rowNum) ->
-//                                new Parent(
-//                                        rs.getInt("parent_id"),
-//                                        rs.getString("first_name"),
-//                                        rs.getString("last_name"),
-//                                        rs.getString("email"),
-//                                        rs.getString("password")
-//                                )
-                            );
+        return jdbcTemplate.query(SQL_GET_ALL_PARENTS, parentRowMapper);
     }
 
     @Override

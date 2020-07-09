@@ -63,7 +63,7 @@ public class ParentController {
         long timestamp = System.currentTimeMillis();
         String token = Jwts.builder().signWith(SignatureAlgorithm.HS256, Constants.API_SECRET_KEY)
                 .setIssuedAt(new Date(timestamp))
-                .setExpiration(new Date(timestamp + Constants.TOKEN_VALIDITY))
+//                .setExpiration(new Date(timestamp + Constants.TOKEN_VALIDITY))
                 .claim("parent id", parent.getParent_id())
                 .claim("first name", parent.getFirst_name())
                 .claim("last name", parent.getLast_name())

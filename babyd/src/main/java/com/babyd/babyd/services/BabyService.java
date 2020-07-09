@@ -14,7 +14,7 @@ public interface BabyService {
 
     Baby fetchBabyById(UUID parent_id, int baby_id) throws EtResourceFoundException;
 
-    Baby addBaby(UUID parent_id, String first_name, String last_name, int feed_type, float wight, String birth_day)
+    Baby addBaby(UUID parent_id, String first_name, String last_name, int feed_type, String birth_day)
             throws EtResourceFoundException, EtBadBirthdayFormat;
 
     void removeBaby(UUID parent_id, int baby_id) throws EtResourceNotFoundException;

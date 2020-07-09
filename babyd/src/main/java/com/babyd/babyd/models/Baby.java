@@ -12,12 +12,11 @@ public class Baby {
     private int formula_feed_table_id;
     private String baby_birth_day;
 
-    public Baby(UUID id, String first_name, String last_name, int feed_type, float wight_table_id, String baby_birth_day) {
+    public Baby(UUID id, String first_name, String last_name, int feed_type, String baby_birth_day) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.feed_type = feed_type;
-        this.wight_table_id = wight_table_id;
         this.baby_birth_day = baby_birth_day;
     }
 

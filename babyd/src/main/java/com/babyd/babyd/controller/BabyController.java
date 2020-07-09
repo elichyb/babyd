@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -21,12 +22,12 @@ public class BabyController {
     @Autowired
     BabyService babyService;
 
-//    @GetMapping("")
-//    public String getAllBabiesForParent(HttpServletRequest req)
-//    {
-//        int id = (int) req.getAttribute("parent_id");
-//        return "Auth parent id: " + id;
-//    }
+    @GetMapping("/get_my_babies")
+    public List<Baby> fetchAllBabies(HttpServletRequest req)
+    {
+        UUID parent_id = UUID.fromString((String) req.getAttribute("parent_id"));
+        return babyService.fetchAllBabies(parent_id);
+    }
 
     @PostMapping("/add_baby")
     public ResponseEntity<Map<String, String>> addBaby(HttpServletRequest request,
@@ -36,10 +37,9 @@ public class BabyController {
         String first_name = (String) babyMap.get("first_name");
         String last_name = (String) babyMap.get("last_name");
         int feed_type = (Integer) babyMap.get("feed_type");
-        float wight = ((Double)babyMap.get("wight")).floatValue();
         String birth_day = (String) babyMap.get("birth_day");
 
-        Baby baby = babyService.addBaby(parent_id, first_name, last_name, feed_type, wight, birth_day);
+        Baby baby = babyService.addBaby(parent_id, first_name, last_name, feed_type, birth_day);
         Map<String,String> map = new HashMap<>();
         map.put("successfuly add baby", baby.getId().toString());
         return new ResponseEntity<>(map, HttpStatus.OK);

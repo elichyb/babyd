@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface BabyRepository {
-    List<Baby> findAll(UUID parent_id) throws EtResourceNotFoundException;
+    List<Baby> fetchAllBabies(UUID parent_id) throws EtResourceNotFoundException;
 
     Baby findById(UUID parent_id, UUID baby_id) throws EtResourceNotFoundException;
 
-    UUID createBaby(UUID parent_id, String first_name, String last_name, int feed_type, float wight, String birth_day)
+    UUID createBaby(UUID parent_id, String first_name, String last_name, int feed_type, String birth_day)
             throws EtResourceFoundException;
 
     void removeBaby(UUID parent_id, UUID baby_id) throws EtResourceNotFoundException;
