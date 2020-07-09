@@ -21,7 +21,7 @@ import java.util.UUID;
 public class BabyRepositoryImpl implements BabyRepository{
     // Insert SQL into baby table
     private static final String SQL_INSERT_TO_BABY = "insert into baby (" +
-            "baby_id, first_name, last_name, birth_day, feed_type)" +
+            "baby_id, first_name, last_name, birth_day, food_type)" +
             "values(?, ?, ?, ?, ?)";
 
     private static final String SQL_INSERT_TO_PARENT_BABY_TABLE = "insert into parent_baby_relation (parent_id, baby_id) " +
@@ -30,12 +30,21 @@ public class BabyRepositoryImpl implements BabyRepository{
     private static final String SQL_GET_ALL_BABIES_FOR_PARENT_ID = "" +
             "select * from baby where baby_id in (select baby_id from parent_baby_relation where parent_id=?)";
 
+    private static final String SQL_DELETE_BABY_FORM_BABY_TABLE = "delete from baby where baby_id=?;";
+
+    private static final String SQL_DELETE_BABY_FROM_BABY_PARENT_RELATION = "delete from parent_baby_relation where baby_id=?";
+
     @Autowired
     JdbcTemplate jdbcTemplate;
 
     @Override
     public List<Baby> fetchAllBabies(UUID parent_id) throws EtResourceNotFoundException {
-        return jdbcTemplate.query(SQL_GET_ALL_BABIES_FOR_PARENT_ID, new Object[] {parent_id}, babyRowMapper);
+        try {
+            return jdbcTemplate.query(SQL_GET_ALL_BABIES_FOR_PARENT_ID, new Object[]{parent_id}, babyRowMapper);
+        }
+        catch (Exception e){
+            throw new EtResourceNotFoundException("Can't find any baby? ");
+        }
     }
 
     @Override
@@ -44,7 +53,7 @@ public class BabyRepositoryImpl implements BabyRepository{
     }
 
     @Override
-    public UUID createBaby(UUID parent_id, String first_name, String last_name, int feed_type, String birth_day)
+    public UUID createBaby(UUID parent_id, String first_name, String last_name, int food_type, String birth_day)
             throws EtResourceFoundException
     {
 //        Date bd = conver_to_date(birth_day);
@@ -56,7 +65,7 @@ public class BabyRepositoryImpl implements BabyRepository{
                 ps.setString(2, first_name);
                 ps.setString(3, last_name);
                 ps.setString(4, birth_day);
-                ps.setInt(   5, feed_type);
+                ps.setInt(   5, food_type);
                 return ps;
             });
 
@@ -77,13 +86,15 @@ public class BabyRepositoryImpl implements BabyRepository{
         }
     }
 
-    private Date conver_to_date(String birth_day) {
-        return java.sql.Date.valueOf(birth_day);
-    }
-
     @Override
     public void removeBaby(UUID parent_id, UUID baby_id) throws EtResourceNotFoundException {
-
+        try {
+            jdbcTemplate.update(SQL_DELETE_BABY_FORM_BABY_TABLE, baby_id);
+            jdbcTemplate.update(SQL_DELETE_BABY_FROM_BABY_PARENT_RELATION, baby_id);
+        }
+        catch (Exception e){
+            throw new EtResourceNotFoundException("No baby to remove");
+        }
     }
 
     private RowMapper<Baby> babyRowMapper = ((rs, rowNum) -> {
@@ -91,7 +102,7 @@ public class BabyRepositoryImpl implements BabyRepository{
                 (UUID) rs.getObject("baby_id"),
                 rs.getString("first_name"),
                 rs.getString("last_name"),
-                rs.getInt("feed_type"),
+                rs.getInt("food_type"),
                 rs.getString("birth_day")
         );
     });

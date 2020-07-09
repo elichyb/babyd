@@ -31,18 +31,18 @@ public class BabyServiceImpl implements BabyService {
 
 
     @Override
-    public Baby addBaby(UUID parent_id, String first_name, String last_name, int feed_type, String birth_day)
+    public Baby addBaby(UUID parent_id, String first_name, String last_name, int food_type, String birth_day)
             throws EtResourceFoundException {
         Pattern pattern = Pattern.compile("^(?:[0-9]{2})?[0-9]{2}-[0-3]?[0-9]-[0-3]?[0-9]$"); // validate date pattern
         if (! pattern.matcher(birth_day).matches())
             throw new EtBadBirthdayFormat("birth day is in the wrong format");
-        UUID baby_id = babyRepository.createBaby(parent_id, first_name, last_name, feed_type, birth_day);
-        Baby new_baby = new Baby(baby_id, first_name, last_name, feed_type, birth_day);
+        UUID baby_id = babyRepository.createBaby(parent_id, first_name, last_name, food_type, birth_day);
+        Baby new_baby = new Baby(baby_id, first_name, last_name, food_type, birth_day);
         return new_baby;
     }
 
     @Override
-    public void removeBaby(UUID parent_id, int baby_id) throws EtResourceNotFoundException {
-
+    public void removeBaby(UUID parent_id, UUID baby_id) throws EtResourceNotFoundException {
+        babyRepository.removeBaby(parent_id, baby_id);
     }
 }

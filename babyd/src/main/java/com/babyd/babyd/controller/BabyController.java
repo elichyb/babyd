@@ -29,6 +29,16 @@ public class BabyController {
         return babyService.fetchAllBabies(parent_id);
     }
 
+    @DeleteMapping("/remove_baby")
+    public ResponseEntity<Map<String, String>> removeBaby(HttpServletRequest req, @RequestBody UUID baby_id)
+    {
+        UUID parent_id = UUID.fromString((String) req.getAttribute("parent_id"));
+        babyService.removeBaby(parent_id, baby_id);
+        Map<String,String> map = new HashMap<>();
+        map.put("Remove baby:", baby_id.toString());
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
     @PostMapping("/add_baby")
     public ResponseEntity<Map<String, String>> addBaby(HttpServletRequest request,
                                                        @RequestBody Map<String, Object> babyMap)
@@ -36,10 +46,10 @@ public class BabyController {
         UUID parent_id = UUID.fromString((String) request.getAttribute("parent_id"));
         String first_name = (String) babyMap.get("first_name");
         String last_name = (String) babyMap.get("last_name");
-        int feed_type = (Integer) babyMap.get("feed_type");
+        int food_type = (Integer) babyMap.get("food_type");
         String birth_day = (String) babyMap.get("birth_day");
 
-        Baby baby = babyService.addBaby(parent_id, first_name, last_name, feed_type, birth_day);
+        Baby baby = babyService.addBaby(parent_id, first_name, last_name, food_type, birth_day);
         Map<String,String> map = new HashMap<>();
         map.put("successfuly add baby", baby.getId().toString());
         return new ResponseEntity<>(map, HttpStatus.OK);
