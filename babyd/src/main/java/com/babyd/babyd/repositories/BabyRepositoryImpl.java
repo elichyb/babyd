@@ -1,6 +1,5 @@
 package com.babyd.babyd.repositories;
 
-import com.babyd.babyd.exceptions.EtAuthException;
 import com.babyd.babyd.exceptions.EtResourceFoundException;
 import com.babyd.babyd.exceptions.EtResourceNotFoundException;
 import com.babyd.babyd.models.Baby;
@@ -10,55 +9,58 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.Types;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class BabyRepositoryImpl implements BabyRepository{
     // Insert SQL into baby table
-    private static final String SQL_INSERT_TO_BABY = "insert into baby (baby_id, first_name, last_name, feed_type, wight, birth_day)" +
-            "values(NEXTVAL('baby_seq'), ?, ?, ?, convert(date, ?, 103))";
+    private static final String SQL_INSERT_TO_BABY = "insert into baby (" +
+            "baby_id, first_name, last_name, birth_day, feed_type)" +
+            "values(?, ?, ?, ?, ?)";
 
-    private static final String SQL_INSERT_TO_PARENT_BABY_TABL = "insert into parent_baby (parent_id, baby_id) " +
+    private static final String SQL_INSERT_TO_PARENT_BABY_TABLE = "insert into parent_baby_relation (parent_id, baby_id) " +
             "values(?,?)";
 
     @Autowired
     JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<Baby> findAll(int parent_id) throws EtResourceNotFoundException {
+    public List<Baby> findAll(UUID parent_id) throws EtResourceNotFoundException {
         return null;
     }
 
     @Override
-    public Baby findById(int parent_id, int baby_id) throws EtResourceNotFoundException {
+    public Baby findById(UUID parent_id, UUID baby_id) throws EtResourceNotFoundException {
         return null;
     }
 
     @Override
-    public int createBaby(int parent_id, String first_name, String last_name, int feed_type, float wight, String birth_day)
+    public UUID createBaby(UUID parent_id, String first_name, String last_name, int feed_type, float wight, String birth_day)
             throws EtResourceFoundException
     {
-        // Make insert into baby table
+//        Date bd = conver_to_date(birth_day);
+        UUID baby_id = UUID.randomUUID();
         try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(SQL_INSERT_TO_BABY, PreparedStatement.RETURN_GENERATED_KEYS);
-                ps.setString(1, first_name);
-                ps.setString(2, last_name);
-                ps.setInt(   3, feed_type);
+                ps.setObject(1, baby_id);
+                ps.setString(2, first_name);
+                ps.setString(3, last_name);
                 ps.setString(4, birth_day);
+                ps.setInt(   5, feed_type);
                 return ps;
-            }, keyHolder);
-
-            int baby_id = (Integer) keyHolder.getKeys().get("baby_id");
+            });
 
             // Add row into parent_baby table
             jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(SQL_INSERT_TO_BABY, PreparedStatement.RETURN_GENERATED_KEYS);
-                ps.setInt(1, parent_id);
-                ps.setInt(2, baby_id);
-                return ps;
+                PreparedStatement ps = connection.prepareStatement(SQL_INSERT_TO_PARENT_BABY_TABLE, PreparedStatement.RETURN_GENERATED_KEYS);
+                    ps.setObject(1, parent_id);
+                    ps.setObject(2, baby_id);
+                    return ps;
                 });
 
             //todo Create tables for feed and wight
@@ -70,9 +72,12 @@ public class BabyRepositoryImpl implements BabyRepository{
         }
     }
 
+    private Date conver_to_date(String birth_day) {
+        return java.sql.Date.valueOf(birth_day);
+    }
 
     @Override
-    public void removeBaby(int parent_id, int baby_id) throws EtResourceNotFoundException {
+    public void removeBaby(UUID parent_id, UUID baby_id) throws EtResourceNotFoundException {
 
     }
 }

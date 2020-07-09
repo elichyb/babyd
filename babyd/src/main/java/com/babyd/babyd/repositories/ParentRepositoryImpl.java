@@ -19,7 +19,7 @@ import java.util.UUID;
 public class ParentRepositoryImpl implements ParentRepository {
 
     private static final String SQL_INSERT_TO_PARENT = "insert into parent (parent_id, first_name, last_name, email, password) " +
-            "values (gen_random_uuid(), ?, ?, ?, ?)";
+            "values (?, ?, ?, ?, ?)";
     private static final String SQL_GET_ALL_PARENTS = "select *from parent";
     private static final String SQL_COUNT_BY_EMAIL = "select count(*) from parent where email=?";
     private static final String SQL_FIND_BY_PARENT_ID = "select parent_id, first_name, last_name, email, password from parent where parent_id=?";
@@ -32,18 +32,19 @@ public class ParentRepositoryImpl implements ParentRepository {
 
     @Override
     public UUID createParent(String first_name, String last_name, String email, String password) throws EtAuthException {
+        UUID parent_id = UUID.randomUUID(); // here we generate parent UUID;
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(10));
         try {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(SQL_INSERT_TO_PARENT, PreparedStatement.RETURN_GENERATED_KEYS);
-                ps.setString(1, first_name);
-                ps.setString(2, last_name);
-                ps.setString(3, email);
-                ps.setString(4, hashedPassword);
+                ps.setObject(1, parent_id);
+                ps.setString(2, first_name);
+                ps.setString(3, last_name);
+                ps.setString(4, email);
+                ps.setString(5, hashedPassword);
                 return ps;
-            }, keyHolder);
-            return (UUID) keyHolder.getKeys().get("parent_id");
+            });
+            return parent_id;
         }
         catch ( Exception e ) {
             throw new EtAuthException("Invalid details, failed to create account");

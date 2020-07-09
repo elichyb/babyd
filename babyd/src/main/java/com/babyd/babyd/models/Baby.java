@@ -1,9 +1,9 @@
 package com.babyd.babyd.models;
 
-import java.util.Date;
+import java.util.UUID;
 
 public class Baby {
-    private int id;
+    private UUID id;
     private String first_name;
     private String last_name;
     private int feed_type; // (1- will represent breastfeeding; 2- formula; 3- combined)
@@ -12,7 +12,7 @@ public class Baby {
     private int formula_feed_table_id;
     private String baby_birth_day;
 
-    public Baby(int id, String first_name, String last_name, int feed_type, float wight_table_id, String baby_birth_day) {
+    public Baby(UUID id, String first_name, String last_name, int feed_type, float wight_table_id, String baby_birth_day) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
@@ -21,11 +21,11 @@ public class Baby {
         this.baby_birth_day = baby_birth_day;
     }
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
