@@ -1,8 +1,6 @@
 package com.babyd.babyd.controller;
 
 import com.babyd.babyd.models.Baby;
-import com.babyd.babyd.models.Parent;
-import com.babyd.babyd.repositories.BabyRepositoryImpl;
 import com.babyd.babyd.services.BabyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,10 +21,11 @@ public class BabyController {
     BabyService babyService;
 
     @GetMapping("/get_my_babies")
-    public List<Baby> fetchAllBabies(HttpServletRequest req)
+    public ResponseEntity<List<Baby>> fetchAllBabies(HttpServletRequest req)
     {
         UUID parent_id = UUID.fromString((String) req.getAttribute("parent_id"));
-        return babyService.fetchAllBabies(parent_id);
+        List<Baby> babies = babyService.fetchAllBabies(parent_id);
+        return new ResponseEntity<>(babies, HttpStatus.OK);
     }
 
     @DeleteMapping("/remove_baby")
@@ -55,4 +54,15 @@ public class BabyController {
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
+    @PostMapping("/get_baby_by_id")
+    public ResponseEntity<Baby> findById(HttpServletRequest request,
+                                                       @RequestBody Map<String, Object> babyMap)
+    {
+        UUID parent_id = UUID.fromString((String) request.getAttribute("parent_id"));
+        UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
+        Baby baby = babyService.fetchBabyById(parent_id, baby_id);
+        return new ResponseEntity<>(baby, HttpStatus.OK);
+    }
 }
+
+

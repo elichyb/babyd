@@ -25,8 +25,8 @@ public class BabyServiceImpl implements BabyService {
     }
 
     @Override
-    public Baby fetchBabyById(UUID parent_id, int baby_id) throws EtResourceFoundException {
-        return null;
+    public Baby fetchBabyById(UUID parent_id, UUID baby_id) throws EtResourceFoundException {
+        return babyRepository.findById(parent_id, baby_id);
     }
 
 

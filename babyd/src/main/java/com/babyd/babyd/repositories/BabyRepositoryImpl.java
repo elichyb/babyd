@@ -7,13 +7,9 @@ import com.babyd.babyd.models.Parent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.Types;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +30,8 @@ public class BabyRepositoryImpl implements BabyRepository{
 
     private static final String SQL_DELETE_BABY_FROM_BABY_PARENT_RELATION = "delete from parent_baby_relation where baby_id=?";
 
+    private static final String SQL_FIND_BABY_BY_ID = "select * from baby where baby_id in " +
+            "(select baby_id from parent_baby_relation where parent_id=? and baby_id=?)";
     @Autowired
     JdbcTemplate jdbcTemplate;
 
@@ -49,14 +47,18 @@ public class BabyRepositoryImpl implements BabyRepository{
 
     @Override
     public Baby findById(UUID parent_id, UUID baby_id) throws EtResourceNotFoundException {
-        return null;
+        try {
+            return jdbcTemplate.queryForObject(SQL_FIND_BABY_BY_ID, new Object[]{parent_id, baby_id}, babyRowMapper);
+        }
+        catch (Exception e){
+            throw new EtResourceNotFoundException("Can't find any baby? ");
+        }
     }
 
     @Override
     public UUID createBaby(UUID parent_id, String first_name, String last_name, int food_type, String birth_day)
             throws EtResourceFoundException
     {
-//        Date bd = conver_to_date(birth_day);
         UUID baby_id = UUID.randomUUID();
         try {
             jdbcTemplate.update(connection -> {

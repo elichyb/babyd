@@ -12,7 +12,7 @@ public interface BabyService {
 
     List<Baby> fetchAllBabies(UUID baby_id);
 
-    Baby fetchBabyById(UUID parent_id, int baby_id) throws EtResourceFoundException;
+    Baby fetchBabyById(UUID parent_id, UUID baby_id) throws EtResourceFoundException;
 
     Baby addBaby(UUID parent_id, String first_name, String last_name, int food_type, String birth_day)
             throws EtResourceFoundException, EtBadBirthdayFormat;
