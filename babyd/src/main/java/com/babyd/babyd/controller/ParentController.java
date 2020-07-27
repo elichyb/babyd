@@ -1,6 +1,7 @@
 package com.babyd.babyd.controller;
 
 import com.babyd.babyd.Constants;
+import com.babyd.babyd.emailHandlers.MailService;
 import com.babyd.babyd.models.Parent;
 import com.babyd.babyd.services.ParentService;
 import io.jsonwebtoken.Jwts;
@@ -22,16 +23,21 @@ public class ParentController {
     @Autowired
     ParentService parentService;
 
+    @Autowired
+    MailService mailService;
+
     @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> registerParent(@RequestBody Map<String, Object> ParentMap)
+    public ResponseEntity<String> registerParent(@RequestBody Map<String, Object> ParentMap)
     {
         String first_name = (String) ParentMap.get("first_name");
         String last_name = (String) ParentMap.get("last_name");
         String email = (String) ParentMap.get("email");
         String password = (String) ParentMap.get("password");
 
+        mailService.sendMail(email, first_name);
+
         Parent parent = parentService.registerParent(first_name, last_name, email, password);
-        return new ResponseEntity<>(generateJWTToken(parent), HttpStatus.OK);
+        return new ResponseEntity<>("Registration completed", HttpStatus.OK);
     }
 
     @PostMapping("/login")

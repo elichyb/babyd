@@ -3,7 +3,6 @@ package com.babyd.babyd.repositories;
 import com.babyd.babyd.exceptions.EtResourceFoundException;
 import com.babyd.babyd.exceptions.EtResourceNotFoundException;
 import com.babyd.babyd.models.Baby;
-import com.babyd.babyd.models.Parent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -32,6 +31,7 @@ public class BabyRepositoryImpl implements BabyRepository{
 
     private static final String SQL_FIND_BABY_BY_ID = "select * from baby where baby_id in " +
             "(select baby_id from parent_baby_relation where parent_id=? and baby_id=?)";
+
     @Autowired
     JdbcTemplate jdbcTemplate;
 
