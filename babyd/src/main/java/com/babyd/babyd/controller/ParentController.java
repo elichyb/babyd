@@ -33,10 +33,8 @@ public class ParentController {
         String last_name = (String) ParentMap.get("last_name");
         String email = (String) ParentMap.get("email");
         String password = (String) ParentMap.get("password");
-
+        parentService.registerParent(first_name, last_name, email, password);
         mailService.sendMail(email, first_name);
-
-        Parent parent = parentService.registerParent(first_name, last_name, email, password);
         return new ResponseEntity<>("Registration completed", HttpStatus.OK);
     }
 
