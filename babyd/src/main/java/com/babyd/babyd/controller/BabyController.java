@@ -46,7 +46,7 @@ public class BabyController {
         String first_name = (String) babyMap.get("first_name");
         String last_name = (String) babyMap.get("last_name");
         int food_type = (Integer) babyMap.get("food_type");
-        String birth_day = (String) babyMap.get("birth_day");
+        String birth_day = (String) babyMap.get("baby_birth_day");
 
         Baby baby = babyService.addBaby(parent_id, first_name, last_name, food_type, birth_day);
         Map<String,String> map = new HashMap<>();

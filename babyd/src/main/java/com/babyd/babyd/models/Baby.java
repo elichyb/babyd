@@ -7,7 +7,7 @@ public class Baby {
     private String first_name;
     private String last_name;
     private int food_type; // (1- will represent breastfeeding; 2- formula; 3- combined)
-    private float wight_table_id;
+    private float Weight_table_id;
     private int breast_feed_table_id;
     private int formula_feed_table_id;
     private String baby_birth_day;
@@ -53,11 +53,11 @@ public class Baby {
     }
 
     public float getWight_table_id() {
-        return wight_table_id;
+        return Weight_table_id;
     }
 
     public void setWight_table_id(int wight_table_id) {
-        this.wight_table_id = wight_table_id;
+        this.Weight_table_id = wight_table_id;
     }
 
     public int getBreast_feed_table_id() {

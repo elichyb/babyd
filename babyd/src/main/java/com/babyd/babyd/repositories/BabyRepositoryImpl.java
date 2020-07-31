@@ -79,13 +79,40 @@ public class BabyRepositoryImpl implements BabyRepository{
                     return ps;
                 });
 
-            //todo Create tables for feed and wight
+            handle_baby_weight(baby_id);
 
             return baby_id;
         }
         catch ( Exception e ) {
             throw new EtResourceFoundException("Invalid details, failed to create Baby");
         }
+    }
+
+    private void handle_baby_weight(UUID uuid) throws EtResourceFoundException{
+        String table_name = String.format("baby_%s_weight", uuid);
+        // Create table weight
+        String create_table_weight = String.format("create table table_name ("+
+                "weight_date varchar(50) primary key  not null," +
+                "baby_weight DOUBLE not_null);", table_name);
+        jdbcTemplate.execute(create_table_weight);
+        String today = ""; // todo get today date string
+
+//        // insert baby weight into it
+//        try {
+//            jdbcTemplate.update(connection -> {
+//                PreparedStatement ps = connection.prepareStatement(SQL_INSERT_TO_BABY, PreparedStatement.RETURN_GENERATED_KEYS);
+//                ps.setObject(1, baby_id);
+//                ps.setString(2, first_name);
+//                ps.setString(3, last_name);
+//                ps.setString(4, birth_day);
+//                ps.setInt(   5, food_type);
+//                return ps;
+//            });
+//        }
+//        catch (Exception e)
+//        {
+//            throw new EtResourceFoundException("");
+//        }
     }
 
     @Override

@@ -16,8 +16,8 @@ create table baby (
     baby_id uuid  primary key not null,
     first_name varchar(50) not null,
     last_name varchar(50) not null,
-    birth_day date not null,
-    feed_type integer not null
+    birth_day varchar(50) not null,
+    food_type integer not null
 );
 
 create table parent_baby_relation (

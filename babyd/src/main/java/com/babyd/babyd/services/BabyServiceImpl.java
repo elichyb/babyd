@@ -33,7 +33,7 @@ public class BabyServiceImpl implements BabyService {
     @Override
     public Baby addBaby(UUID parent_id, String first_name, String last_name, int food_type, String birth_day)
             throws EtResourceFoundException {
-        Pattern pattern = Pattern.compile("^([0-2][0-9]|(3)[0-1])(-)(((0)[0-9])|((1)[0-2]))(-)\\d{4}$"); // validate date pattern
+        Pattern pattern = Pattern.compile("^\\d{4}(-)(((0)[0-9])|((1)[0-2]))(-)([0-2][0-9]|(3)[0-1])$"); // validate date pattern
         if (! pattern.matcher(birth_day).matches())
             throw new EtBadBirthdayFormat("birth day is in the wrong format");
         UUID baby_id = babyRepository.createBaby(parent_id, first_name, last_name, food_type, birth_day);
