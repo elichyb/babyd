@@ -47,8 +47,9 @@ public class BabyController {
         String last_name = (String) babyMap.get("last_name");
         int food_type = (Integer) babyMap.get("food_type");
         String birth_day = (String) babyMap.get("baby_birth_day");
+        double weight = Double.parseDouble((String) babyMap.get("weight"));
 
-        Baby baby = babyService.addBaby(parent_id, first_name, last_name, food_type, birth_day);
+        Baby baby = babyService.addBaby(parent_id, first_name, last_name, food_type, birth_day, weight);
         Map<String,String> map = new HashMap<>();
         map.put("successfuly add baby", baby.getId().toString());
         return new ResponseEntity<>(map, HttpStatus.OK);

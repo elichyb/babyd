@@ -11,7 +11,7 @@ public interface BabyRepository {
 
     Baby findById(UUID parent_id, UUID baby_id) throws EtResourceNotFoundException;
 
-    UUID createBaby(UUID parent_id, String first_name, String last_name, int food_type, String birth_day)
+    UUID createBaby(UUID parent_id, String first_name, String last_name, int food_type, String birth_day, double weight)
             throws EtResourceFoundException;
 
     void removeBaby(UUID parent_id, UUID baby_id) throws EtResourceNotFoundException;

@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,7 +58,7 @@ public class BabyRepositoryImpl implements BabyRepository{
     }
 
     @Override
-    public UUID createBaby(UUID parent_id, String first_name, String last_name, int food_type, String birth_day)
+    public UUID createBaby(UUID parent_id, String first_name, String last_name, int food_type, String birth_day, double weight)
             throws EtResourceFoundException
     {
         UUID baby_id = UUID.randomUUID();
@@ -79,7 +81,7 @@ public class BabyRepositoryImpl implements BabyRepository{
                     return ps;
                 });
 
-            handle_baby_weight(baby_id);
+            handle_baby_weight(baby_id, weight);
 
             return baby_id;
         }
@@ -88,31 +90,32 @@ public class BabyRepositoryImpl implements BabyRepository{
         }
     }
 
-    private void handle_baby_weight(UUID uuid) throws EtResourceFoundException{
+    private void handle_baby_weight(UUID uuid, double weight) throws EtResourceFoundException{
         String table_name = String.format("baby_%s_weight", uuid);
+
         // Create table weight
-        String create_table_weight = String.format("create table table_name ("+
+        String create_table_weight = String.format("create table %s ("+
                 "weight_date varchar(50) primary key  not null," +
                 "baby_weight DOUBLE not_null);", table_name);
+        String update_weight_table = String.format("insert into %s (weight_date, weight_date) valuse(?,?)", table_name);
+        try {
         jdbcTemplate.execute(create_table_weight);
-        String today = ""; // todo get today date string
 
-//        // insert baby weight into it
-//        try {
-//            jdbcTemplate.update(connection -> {
-//                PreparedStatement ps = connection.prepareStatement(SQL_INSERT_TO_BABY, PreparedStatement.RETURN_GENERATED_KEYS);
-//                ps.setObject(1, baby_id);
-//                ps.setString(2, first_name);
-//                ps.setString(3, last_name);
-//                ps.setString(4, birth_day);
-//                ps.setInt(   5, food_type);
-//                return ps;
-//            });
-//        }
-//        catch (Exception e)
-//        {
-//            throw new EtResourceFoundException("");
-//        }
+        //Get today date
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String today = LocalDateTime.now().toString();
+
+        jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(update_weight_table, PreparedStatement.RETURN_GENERATED_KEYS);
+                ps.setString(1, today);
+                ps.setDouble(2, weight);
+                return ps;
+            });
+        }
+        catch (Exception e)
+        {
+            throw new EtResourceFoundException("");
+        }
     }
 
     @Override
