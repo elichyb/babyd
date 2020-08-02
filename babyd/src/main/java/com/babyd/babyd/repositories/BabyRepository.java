@@ -16,4 +16,6 @@ public interface BabyRepository {
 
     void removeBaby(UUID parent_id, UUID baby_id) throws EtResourceNotFoundException;
 
+    void update_baby_weight(UUID baby_id, double weight) throws EtResourceNotFoundException;
+
 }

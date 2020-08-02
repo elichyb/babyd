@@ -16,23 +16,35 @@ import java.util.UUID;
 
 @Repository
 public class BabyRepositoryImpl implements BabyRepository{
+
     // Insert SQL into baby table
     private static final String SQL_INSERT_TO_BABY = "insert into baby (" +
             "baby_id, first_name, last_name, birth_day, food_type)" +
             "values(?, ?, ?, ?, ?)";
 
-    private static final String SQL_INSERT_TO_PARENT_BABY_TABLE = "insert into parent_baby_relation (parent_id, baby_id) " +
+    private static final String SQL_INSERT_TO_PARENT_BABY_TABLE = "insert into " +
+            "parent_baby_relation (parent_id, baby_id) " +
             "values(?,?)";
 
     private static final String SQL_GET_ALL_BABIES_FOR_PARENT_ID = "" +
-            "select * from baby where baby_id in (select baby_id from parent_baby_relation where parent_id=?)";
+            "select * " +
+            "from baby " +
+            "where baby_id in (select baby_id from parent_baby_relation where parent_id=?)";
 
     private static final String SQL_DELETE_BABY_FORM_BABY_TABLE = "delete from baby where baby_id=?;";
 
     private static final String SQL_DELETE_BABY_FROM_BABY_PARENT_RELATION = "delete from parent_baby_relation where baby_id=?";
 
-    private static final String SQL_FIND_BABY_BY_ID = "select * from baby where baby_id in " +
+    private static final String SQL_FIND_BABY_BY_ID = "select * " +
+            "from baby " +
+            "where baby_id in " +
             "(select baby_id from parent_baby_relation where parent_id=? and baby_id=?)";
+
+    private static final String BABY_WEIGHT_TABLE_CREATE = "create table %s (" +
+            "weight_date varchar(50) primary key  not null," +
+            "weight double precision not null);";
+
+    private static final String UPDATE_INTO_WEIGHT_BABY_TABLE = "insert into %s (weight_date, weight) values (?, ?)";
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -91,30 +103,20 @@ public class BabyRepositoryImpl implements BabyRepository{
     }
 
     private void handle_baby_weight(UUID uuid, double weight) throws EtResourceFoundException{
-        String table_name = String.format("baby_%s_weight", uuid);
+        String table_name = String.format("baby_%s_weight", String.valueOf(uuid.getLeastSignificantBits()).substring(1));
 
         // Create table weight
-        String create_table_weight = String.format("create table %s ("+
-                "weight_date varchar(50) primary key  not null," +
-                "baby_weight DOUBLE not_null);", table_name);
-        String update_weight_table = String.format("insert into %s (weight_date, weight_date) valuse(?,?)", table_name);
+        String create_table_weight = String.format(BABY_WEIGHT_TABLE_CREATE, table_name);
+        String update_weight_table = String.format(UPDATE_INTO_WEIGHT_BABY_TABLE, table_name);
+
         try {
         jdbcTemplate.execute(create_table_weight);
-
-        //Get today date
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String today = LocalDateTime.now().toString();
-
-        jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(update_weight_table, PreparedStatement.RETURN_GENERATED_KEYS);
-                ps.setString(1, today);
-                ps.setDouble(2, weight);
-                return ps;
-            });
+        update_baby_weight(uuid, weight);
         }
+
         catch (Exception e)
         {
-            throw new EtResourceFoundException("");
+            throw new EtResourceFoundException("Failed to create baby's weight table");
         }
     }
 
@@ -128,6 +130,28 @@ public class BabyRepositoryImpl implements BabyRepository{
             throw new EtResourceNotFoundException("No baby to remove");
         }
     }
+
+    @Override
+    public void update_baby_weight(UUID baby_id, double weight) throws EtResourceNotFoundException {
+        String table_name = String.format("baby_%s_weight", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
+        String update_weight_table = String.format(UPDATE_INTO_WEIGHT_BABY_TABLE, table_name);
+        try {
+            //Get today date
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String today = LocalDateTime.now().toString();
+
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(update_weight_table, PreparedStatement.RETURN_GENERATED_KEYS);
+                ps.setString(1, today);
+                ps.setDouble(2, weight);
+                return ps;
+            });
+        }
+        catch (Exception e ){
+            throw new EtResourceNotFoundException("Failed to update baby's weight");
+        }
+    }
+
 
     private RowMapper<Baby> babyRowMapper = ((rs, rowNum) -> {
         return new Baby(

@@ -3,7 +3,7 @@ package com.babyd.babyd.models;
 import java.util.UUID;
 
 public class Baby {
-    private UUID id;
+    private UUID baby_id;
     private String first_name;
     private String last_name;
     private int food_type; // (1- will represent breastfeeding; 2- formula; 3- combined)
@@ -13,7 +13,7 @@ public class Baby {
     private String baby_birth_day;
 
     public Baby(UUID id, String first_name, String last_name, int food_type, String baby_birth_day) {
-        this.id = id;
+        this.baby_id = id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.food_type = food_type;
@@ -21,7 +21,7 @@ public class Baby {
     }
 
     public Baby(UUID id, String first_name, String last_name, int food_type, String baby_birth_day, double weight) {
-        this.id = id;
+        this.baby_id = id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.food_type = food_type;
@@ -30,11 +30,11 @@ public class Baby {
     }
 
     public UUID getId() {
-        return id;
+        return baby_id;
     }
 
     public void setId(UUID id) {
-        this.id = id;
+        this.baby_id = id;
     }
 
     public String getFirst_name() {
