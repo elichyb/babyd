@@ -64,6 +64,18 @@ public class BabyController {
         Baby baby = babyService.fetchBabyById(parent_id, baby_id);
         return new ResponseEntity<>(baby, HttpStatus.OK);
     }
+
+    @PostMapping("/set_weight")
+    public ResponseEntity<String> setWeight(HttpServletRequest request,
+                                            @RequestBody Map<String, Object> babyMap)
+    {
+        UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
+        double weight = Double.parseDouble((String) babyMap.get("weight"));
+        babyService.setBabyWeight(baby_id, weight);
+        return new ResponseEntity<>("Baby weight set successfully", HttpStatus.OK);
+    }
+
+
 }
 
 

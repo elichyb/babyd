@@ -3,6 +3,7 @@ package com.babyd.babyd.services;
 import com.babyd.babyd.exceptions.EtBadBirthdayFormat;
 import com.babyd.babyd.exceptions.EtResourceFoundException;
 import com.babyd.babyd.exceptions.EtResourceNotFoundException;
+import com.babyd.babyd.exceptions.EtUnableConnectToDB;
 import com.babyd.babyd.models.Baby;
 import com.babyd.babyd.repositories.BabyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,5 +45,15 @@ public class BabyServiceImpl implements BabyService {
     @Override
     public void removeBaby(UUID parent_id, UUID baby_id) throws EtResourceNotFoundException {
         babyRepository.removeBaby(parent_id, baby_id);
+    }
+
+    @Override
+    public void setBabyWeight(UUID baby_id, double weight) throws EtUnableConnectToDB {
+        try {
+            babyRepository.update_baby_weight(baby_id, weight);
+        }
+        catch (Exception e){
+            throw new EtUnableConnectToDB("Failed to set new weight");
+        }
     }
 }
