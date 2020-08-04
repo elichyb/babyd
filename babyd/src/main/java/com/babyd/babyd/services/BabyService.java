@@ -5,6 +5,7 @@ import com.babyd.babyd.exceptions.EtResourceFoundException;
 import com.babyd.babyd.exceptions.EtResourceNotFoundException;
 import com.babyd.babyd.exceptions.EtUnableConnectToDB;
 import com.babyd.babyd.models.Baby;
+import com.babyd.babyd.models.BabyFullInfo;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,4 +23,7 @@ public interface BabyService {
 
     void setBabyWeight(UUID baby_id, double weight) throws EtUnableConnectToDB;
 
+    BabyFullInfo getBabyFullInfoForDate(UUID baby_id, String date) throws EtResourceNotFoundException;
+
+    void setDipper(UUID baby_id, String date, String dipper) throws EtUnableConnectToDB;
 }

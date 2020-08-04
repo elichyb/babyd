@@ -3,6 +3,8 @@ package com.babyd.babyd.repositories;
 import com.babyd.babyd.exceptions.EtResourceFoundException;
 import com.babyd.babyd.exceptions.EtResourceNotFoundException;
 import com.babyd.babyd.models.Baby;
+import com.babyd.babyd.models.BabyFullInfo;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -18,4 +20,5 @@ public interface BabyRepository {
 
     void update_baby_weight(UUID baby_id, double weight) throws EtResourceNotFoundException;
 
+    BabyFullInfo getBabyFullInfoForDate(UUID baby_id, String date);
 }

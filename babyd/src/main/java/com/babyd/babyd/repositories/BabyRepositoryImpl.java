@@ -3,6 +3,7 @@ package com.babyd.babyd.repositories;
 import com.babyd.babyd.exceptions.EtResourceFoundException;
 import com.babyd.babyd.exceptions.EtResourceNotFoundException;
 import com.babyd.babyd.models.Baby;
+import com.babyd.babyd.models.BabyFullInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -45,6 +46,16 @@ public class BabyRepositoryImpl implements BabyRepository{
             "weight double precision not null);";
 
     private static final String UPDATE_INTO_WEIGHT_BABY_TABLE = "insert into %s (weight_date, weight) values (?, ?)";
+
+    private static final String CREATE_TABLE_BABY_FULL_INFO = "create table %s (" +
+            "date_measure varchar(50) not null," +
+            "time_measure varchar(50) not null," +
+            "dipper varchar(50)," +
+            "feed_amount integer," +
+            "breast_side varchar(50)," +
+            "sleeping_time integer," +
+            "CONSTRAINT P_B_KEY primary key (date_measure, time_measure)" +
+            ");";
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -93,7 +104,8 @@ public class BabyRepositoryImpl implements BabyRepository{
                     return ps;
                 });
 
-            handle_baby_weight(baby_id, weight);
+            handle_baby_weight_table(baby_id, weight);
+            handle_baby_full_info_table(baby_id);
 
             return baby_id;
         }
@@ -102,16 +114,29 @@ public class BabyRepositoryImpl implements BabyRepository{
         }
     }
 
-    private void handle_baby_weight(UUID uuid, double weight) throws EtResourceFoundException{
+    private void handle_baby_full_info_table(UUID baby_id) {
+        String table_name = String.format("baby_%s_full_info", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
+
+        // Create table baby full info
+        String create_table_baby_full_info = String.format(CREATE_TABLE_BABY_FULL_INFO, table_name);
+        try {
+            jdbcTemplate.execute(create_table_baby_full_info);
+        }
+        catch (Exception e)
+        {
+            throw new EtResourceFoundException("Failed to create baby's full info table");
+        }
+    }
+
+    private void handle_baby_weight_table(UUID uuid, double weight) throws EtResourceFoundException{
         String table_name = String.format("baby_%s_weight", String.valueOf(uuid.getLeastSignificantBits()).substring(1));
 
         // Create table weight
         String create_table_weight = String.format(BABY_WEIGHT_TABLE_CREATE, table_name);
-        String update_weight_table = String.format(UPDATE_INTO_WEIGHT_BABY_TABLE, table_name);
 
         try {
-        jdbcTemplate.execute(create_table_weight);
-        update_baby_weight(uuid, weight);
+            jdbcTemplate.execute(create_table_weight);
+            update_baby_weight(uuid, weight);
         }
 
         catch (Exception e)
@@ -150,6 +175,11 @@ public class BabyRepositoryImpl implements BabyRepository{
         catch (Exception e ){
             throw new EtResourceNotFoundException("Failed to update baby's weight");
         }
+    }
+
+    @Override
+    public BabyFullInfo getBabyFullInfoForDate(UUID baby_id, String date) {
+        return null;
     }
 
 

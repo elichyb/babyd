@@ -5,6 +5,7 @@ import com.babyd.babyd.exceptions.EtResourceFoundException;
 import com.babyd.babyd.exceptions.EtResourceNotFoundException;
 import com.babyd.babyd.exceptions.EtUnableConnectToDB;
 import com.babyd.babyd.models.Baby;
+import com.babyd.babyd.models.BabyFullInfo;
 import com.babyd.babyd.repositories.BabyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,5 +56,21 @@ public class BabyServiceImpl implements BabyService {
         catch (Exception e){
             throw new EtUnableConnectToDB("Failed to set new weight");
         }
+    }
+
+    @Override
+    public BabyFullInfo getBabyFullInfoForDate(UUID baby_id, String date) {
+        try {
+            babyRepository.getBabyFullInfoForDate(baby_id, date);
+        }
+        catch (Exception e){
+            throw new EtResourceNotFoundException("Can't find baby full info in DB");
+        }
+        return null;
+    }
+
+    @Override
+    public void setDipper(UUID baby_id, String date, String dipper) {
+
     }
 }

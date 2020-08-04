@@ -1,12 +1,12 @@
 package com.babyd.babyd.controller;
 
 import com.babyd.babyd.models.Baby;
+import com.babyd.babyd.models.BabyFullInfo;
 import com.babyd.babyd.services.BabyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
@@ -21,17 +21,17 @@ public class BabyController {
     BabyService babyService;
 
     @GetMapping("/get_my_babies")
-    public ResponseEntity<List<Baby>> fetchAllBabies(HttpServletRequest req)
+    public ResponseEntity<List<Baby>> fetchAllBabies(HttpServletRequest request)
     {
-        UUID parent_id = UUID.fromString((String) req.getAttribute("parent_id"));
+        UUID parent_id = UUID.fromString((String) request.getAttribute("parent_id"));
         List<Baby> babies = babyService.fetchAllBabies(parent_id);
         return new ResponseEntity<>(babies, HttpStatus.OK);
     }
 
     @DeleteMapping("/remove_baby")
-    public ResponseEntity<Map<String, String>> removeBaby(HttpServletRequest req, @RequestBody UUID baby_id)
+    public ResponseEntity<Map<String, String>> removeBaby(HttpServletRequest request, @RequestBody UUID baby_id)
     {
-        UUID parent_id = UUID.fromString((String) req.getAttribute("parent_id"));
+        UUID parent_id = UUID.fromString((String) request.getAttribute("parent_id"));
         babyService.removeBaby(parent_id, baby_id);
         Map<String,String> map = new HashMap<>();
         map.put("Remove baby:", baby_id.toString());
@@ -65,17 +65,33 @@ public class BabyController {
         return new ResponseEntity<>(baby, HttpStatus.OK);
     }
 
-    @PostMapping("/set_weight")
+    @PutMapping("/set_weight")
     public ResponseEntity<String> setWeight(HttpServletRequest request,
                                             @RequestBody Map<String, Object> babyMap)
     {
         UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
-        double weight = Double.parseDouble((String) babyMap.get("weight"));
+        double weight = Double.parseDouble((String) babyMap.get("weight").toString());
         babyService.setBabyWeight(baby_id, weight);
         return new ResponseEntity<>("Baby weight set successfully", HttpStatus.OK);
     }
 
+    @GetMapping("/get_baby_full_info_for_today")
+    public ResponseEntity<BabyFullInfo> getBabyFullInfo(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
+    {
+        UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
+        String date = (String) babyMap.get("date");
+        BabyFullInfo babyFullInfo = babyService.getBabyFullInfoForDate(baby_id, date);
+        return new ResponseEntity<>(babyFullInfo, HttpStatus.OK);
+    }
 
+    @PutMapping("/set_baby_dipper")
+    public ResponseEntity<String> setBabyDipper(HttpServletRequest request, @RequestBody Map<String, Object> babyMap){
+        UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
+        String date = (String) babyMap.get("date");
+        String dipper = (String) babyMap.get("dipper");
+        babyService.setDipper(baby_id, date, dipper);
+        return new ResponseEntity<>("Dipper set successfully", HttpStatus.OK);
+    }
 }
 
 
