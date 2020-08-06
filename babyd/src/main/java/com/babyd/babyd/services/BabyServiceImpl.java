@@ -10,7 +10,6 @@ import com.babyd.babyd.repositories.BabyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -39,8 +38,7 @@ public class BabyServiceImpl implements BabyService {
         if (! pattern.matcher(birth_day).matches())
             throw new EtBadBirthdayFormat("birth day is in the wrong format");
         UUID baby_id = babyRepository.createBaby(parent_id, first_name, last_name, food_type, birth_day, weight);
-        Baby new_baby = new Baby(baby_id, first_name, last_name, food_type, birth_day, weight);
-        return new_baby;
+        return new Baby(baby_id, first_name, last_name, food_type, birth_day);
     }
 
     @Override
@@ -59,7 +57,7 @@ public class BabyServiceImpl implements BabyService {
     }
 
     @Override
-    public BabyFullInfo getBabyFullInfoForDate(UUID baby_id, String date) {
+    public List<BabyFullInfo> getBabyFullInfoForDate(UUID baby_id, String date) {
         try {
             babyRepository.getBabyFullInfoForDate(baby_id, date);
         }
@@ -70,7 +68,14 @@ public class BabyServiceImpl implements BabyService {
     }
 
     @Override
-    public void setDipper(UUID baby_id, String date, String dipper) {
+    public void setDipper(UUID baby_id, String dipper_date, String time, String dipper) {
+        Pattern date_attern = Pattern.compile("^\\d{4}(-)(((0)[0-9])|((1)[0-2]))(-)([0-2][0-9]|(3)[0-1])$");
+        Pattern time_attern = Pattern.compile("^\\d{2}:\\d{2}:\\d{2}$");
+        if ((! date_attern.matcher(dipper_date).matches()) || (! time_attern.matcher(time).matches()))
+            throw new EtResourceNotFoundException("Problem in the data we got Date/Time isn't send good");
+        if ((!dipper.equals("wet")) && (!dipper.equals("dirty")))
+            throw new EtResourceNotFoundException("Problem in the data we got dipper that isn't wet nor dirty");
 
+        babyRepository.setDipper( baby_id, dipper_date, time, dipper);
     }
 }

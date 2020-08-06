@@ -23,7 +23,7 @@ public interface BabyService {
 
     void setBabyWeight(UUID baby_id, double weight) throws EtUnableConnectToDB;
 
-    BabyFullInfo getBabyFullInfoForDate(UUID baby_id, String date) throws EtResourceNotFoundException;
+    List<BabyFullInfo> getBabyFullInfoForDate(UUID baby_id, String date) throws EtResourceNotFoundException;
 
-    void setDipper(UUID baby_id, String date, String dipper) throws EtUnableConnectToDB;
+    void setDipper(UUID baby_id, String dipper_date, String time, String dipper) throws EtUnableConnectToDB;
 }

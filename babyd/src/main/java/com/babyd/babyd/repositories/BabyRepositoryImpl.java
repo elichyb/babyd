@@ -10,8 +10,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,21 +44,33 @@ public class BabyRepositoryImpl implements BabyRepository{
             "where baby_id in " +
             "(select baby_id from parent_baby_relation where parent_id=? and baby_id=?)";
 
-    private static final String BABY_WEIGHT_TABLE_CREATE = "create table %s (" +
+    private static final String SQL_BABY_WEIGHT_TABLE_CREATE = "create table %s (" +
             "weight_date varchar(50) primary key  not null," +
             "weight double precision not null);";
 
-    private static final String UPDATE_INTO_WEIGHT_BABY_TABLE = "insert into %s (weight_date, weight) values (?, ?)";
+    private static final String SQL_GET_BABY_WEIGHT = "seleft * from %s";
 
-    private static final String CREATE_TABLE_BABY_FULL_INFO = "create table %s (" +
+    private static final String SQL_INSERT_INTO_WEIGHT_BABY_TABLE = "insert into %s (weight_date, weight) values (?, ?)";
+
+    private static final String SQL_CREATE_TABLE_BABY_FULL_INFO = "create table %s (" +
             "date_measure varchar(50) not null," +
             "time_measure varchar(50) not null," +
+            "baby_weight double precision not null," +
             "dipper varchar(50)," +
             "feed_amount integer," +
             "breast_side varchar(50)," +
+            "breast_feeding_time_length integer," +
             "sleeping_time integer," +
-            "CONSTRAINT P_B_KEY primary key (date_measure, time_measure)" +
+            "CONSTRAINT B_I_KEY primary key (date_measure, time_measure)" +
             ");";
+
+    private static final String SQL_INSERT_BABY_INFO_TABLE = "insert into %s (date_measure, time_measure, dipper, feed_amount, " +
+            "breast_side, sleeping_time) " +
+            "values (?, ?, ?, ?, ?, ?)";
+
+    private static final String SQL_GET_BABY_INFO = "select * " +
+            "from %s " +
+            "where date_measure=?";
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -118,7 +133,7 @@ public class BabyRepositoryImpl implements BabyRepository{
         String table_name = String.format("baby_%s_full_info", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
 
         // Create table baby full info
-        String create_table_baby_full_info = String.format(CREATE_TABLE_BABY_FULL_INFO, table_name);
+        String create_table_baby_full_info = String.format(SQL_CREATE_TABLE_BABY_FULL_INFO, table_name);
         try {
             jdbcTemplate.execute(create_table_baby_full_info);
         }
@@ -132,7 +147,7 @@ public class BabyRepositoryImpl implements BabyRepository{
         String table_name = String.format("baby_%s_weight", String.valueOf(uuid.getLeastSignificantBits()).substring(1));
 
         // Create table weight
-        String create_table_weight = String.format(BABY_WEIGHT_TABLE_CREATE, table_name);
+        String create_table_weight = String.format(SQL_BABY_WEIGHT_TABLE_CREATE, table_name);
 
         try {
             jdbcTemplate.execute(create_table_weight);
@@ -159,7 +174,7 @@ public class BabyRepositoryImpl implements BabyRepository{
     @Override
     public void update_baby_weight(UUID baby_id, double weight) throws EtResourceNotFoundException {
         String table_name = String.format("baby_%s_weight", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
-        String update_weight_table = String.format(UPDATE_INTO_WEIGHT_BABY_TABLE, table_name);
+        String update_weight_table = String.format(SQL_INSERT_INTO_WEIGHT_BABY_TABLE, table_name);
         try {
             //Get today date
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -178,10 +193,81 @@ public class BabyRepositoryImpl implements BabyRepository{
     }
 
     @Override
-    public BabyFullInfo getBabyFullInfoForDate(UUID baby_id, String date) {
-        return null;
+    public List<BabyFullInfo> getBabyFullInfoForDate(UUID baby_id, String date) {
+        String table_name = String.format("baby_%s_full_info", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
+        String get_baby_full_info = String.format(SQL_GET_BABY_INFO,table_name);
+        try {
+            return jdbcTemplate.query(get_baby_full_info, new Object[]{date}, babyFullInfoRowMapper);
+        }
+        catch (Exception e)
+        {
+            throw new EtResourceNotFoundException("Can't find baby info in the DB");
+        }
     }
 
+    @Override
+    public void setDipper(UUID baby_id, String measure_date, String measure_time, String dipper) {
+        String table_name = String.format("baby_%s_full_info", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
+        // Insert sql into table baby info
+        String create_table_weight = String.format(SQL_INSERT_BABY_INFO_TABLE, table_name);
+        double baby_weight = get_baby_weight(baby_id, measure_date);
+        try{
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(create_table_weight, PreparedStatement.RETURN_GENERATED_KEYS);
+                ps.setString(1, measure_date);
+                ps.setString(2, measure_time);
+                ps.setString(3, dipper);
+                ps.setObject(4, null);
+                ps.setObject(5, null);
+                ps.setObject(5, null);
+                ps.setObject(6, null);
+                return ps;
+            });
+        }
+        catch (Exception e){
+            throw new EtResourceNotFoundException("Can't set dipper replacement");
+        }
+    }
+
+    private double get_baby_weight(UUID baby_id, String measure_date) {
+        String table_name = String.format("baby_%s_weight", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
+        String sql = String.format(SQL_GET_BABY_WEIGHT, table_name);
+        List<Weight> babyWeight;
+        try{
+            babyWeight = jdbcTemplate.query(sql, new Object[]{measure_date}, babyWeightRowMapper);
+        }
+        catch (Exception e)
+        {
+            return 0.0;
+        }
+
+        double weight = 0;
+        long get_measure_date = getDateFromString(measure_date).getTime();
+        long min = get_measure_date;
+
+        // Get the last baby weight measure.
+        for(Weight w : babyWeight){
+            long tmp = getDateFromString(w.getDate()).getTime();
+            long tmp_diff = get_measure_date - tmp;
+            if (min < tmp_diff && get_measure_date > tmp){
+                min = tmp_diff;
+                weight = w.getBaby_weight();
+            }
+        }
+
+        return weight;
+    }
+
+    private Date getDateFromString(String measure_date){
+        String format = "yyyy-MM-dd";
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        try {
+            return sdf.parse(measure_date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     private RowMapper<Baby> babyRowMapper = ((rs, rowNum) -> {
         return new Baby(
@@ -190,6 +276,25 @@ public class BabyRepositoryImpl implements BabyRepository{
                 rs.getString("last_name"),
                 rs.getInt("food_type"),
                 rs.getString("birth_day")
+        );
+    });
+
+    private RowMapper<BabyFullInfo> babyFullInfoRowMapper = ((rs, rowNum) ->{
+       return new BabyFullInfo(
+            rs.getString("dipper_date"),
+            rs.getInt("feed_amount"),
+            rs.getString("measure_time"),
+            rs.getString("measure_date"),
+            rs.getString("breast_side"),
+            rs.getInt("breast_feeding_time_length"),
+            rs.getInt("sleeping_time")
+       );
+    });
+
+    private RowMapper<Weight> babyWeightRowMapper = ((rs,rowNum)->{
+        return new Weight(
+                rs.getDouble("weight"),
+                rs.getString("weight_date")
         );
     });
 }

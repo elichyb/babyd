@@ -1,38 +1,39 @@
 package com.babyd.babyd.models;
 
-import java.sql.Time;
-import java.util.Date;
 import java.util.UUID;
 
 public class BabyFullInfo {
-    private UUID baby_id;                       // Baby id
     private String dipper;                      // Can be wet or dry
-    private Integer feed_amount;                // can be null if we are on breast feeding
-    private double weight;                      // baby weight
-    private Time measure_time;                  // Will hold the last time the baby eat
-    private Date today;                         // Will hold the date of today.
+    private Integer feed_amount;                // Can be null if we are on breast feeding
+    private double weight;                      // Baby weight
+    private String measure_time;                // Will hold the last time the baby eat
+    private String measure_date;                // Will hold the date of today.
     private String breast_side;                 // Last breast side the baby eat from
-    private Integer breast_feeding_time_length; // the time the baby breast feed
-    private Integer sleeping_time;              // time in minutes the baby slept.
+    private Integer breast_feeding_time_length; // The time the baby breast feed in minutes
+    private Integer sleeping_time;              // Time in minutes the baby slept.
 
-    public BabyFullInfo(UUID baby_id, String dipper, Integer feed_amount, double weight, Time measure_time, Date today, String breast_side, Integer breast_feeding_time_length, Integer sleeping_time) {
-        this.baby_id = baby_id;
+    public BabyFullInfo(String dipper, Integer feed_amount, double weight, String measure_time, String measure_date,
+                        String breast_side, Integer breast_feeding_time_length, Integer sleeping_time) {
         this.dipper = dipper;
         this.feed_amount = feed_amount;
         this.weight = weight;
         this.measure_time = measure_time;
-        this.today = today;
+        this.measure_date = measure_date;
         this.breast_side = breast_side;
         this.breast_feeding_time_length = breast_feeding_time_length;
         this.sleeping_time = sleeping_time;
     }
 
-    public UUID getBaby_id() {
-        return baby_id;
-    }
 
-    public void setBaby_id(UUID baby_id) {
-        this.baby_id = baby_id;
+
+    public BabyFullInfo(String dipper, Integer feed_amount, String measure_time, String measure_date, String breast_side, Integer breast_feeding_time_length, Integer sleeping_time) {
+        this.dipper = dipper;
+        this.feed_amount = feed_amount;
+        this.measure_time = measure_time;
+        this.measure_date = measure_date;
+        this.breast_side = breast_side;
+        this.breast_feeding_time_length = breast_feeding_time_length;
+        this.sleeping_time = sleeping_time;
     }
 
     public String getDipper() {
@@ -59,20 +60,20 @@ public class BabyFullInfo {
         this.weight = weight;
     }
 
-    public Time getMeasure_time() {
+    public String getMeasure_time() {
         return measure_time;
     }
 
-    public void setMeasure_time(Time measure_time) {
+    public void setMeasure_time(String measure_time) {
         this.measure_time = measure_time;
     }
 
-    public Date getToday() {
-        return today;
+    public String getMeasure_date() {
+        return measure_date;
     }
 
-    public void setToday(Date today) {
-        this.today = today;
+    public void setMeasure_date(String measure_date) {
+        this.measure_date = measure_date;
     }
 
     public String getBreast_side() {

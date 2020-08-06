@@ -65,7 +65,7 @@ public class BabyController {
         return new ResponseEntity<>(baby, HttpStatus.OK);
     }
 
-    @PutMapping("/set_weight")
+    @PostMapping("/set_weight")
     public ResponseEntity<String> setWeight(HttpServletRequest request,
                                             @RequestBody Map<String, Object> babyMap)
     {
@@ -76,20 +76,31 @@ public class BabyController {
     }
 
     @GetMapping("/get_baby_full_info_for_today")
-    public ResponseEntity<BabyFullInfo> getBabyFullInfo(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
+    public ResponseEntity<List<BabyFullInfo>> getBabyFullInfo(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
     {
         UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
         String date = (String) babyMap.get("date");
-        BabyFullInfo babyFullInfo = babyService.getBabyFullInfoForDate(baby_id, date);
+        List<BabyFullInfo> babyFullInfo = babyService.getBabyFullInfoForDate(baby_id, date);
         return new ResponseEntity<>(babyFullInfo, HttpStatus.OK);
     }
 
-    @PutMapping("/set_baby_dipper")
-    public ResponseEntity<String> setBabyDipper(HttpServletRequest request, @RequestBody Map<String, Object> babyMap){
+    @PostMapping("/set_baby_dipper")
+    public ResponseEntity<String> setBabyDipper(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
+    {
         UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
-        String date = (String) babyMap.get("date");
+        String dipper_date = (String) babyMap.get("date");
+        String time = (String) babyMap.get("time");
         String dipper = (String) babyMap.get("dipper");
-        babyService.setDipper(baby_id, date, dipper);
+        babyService.setDipper(baby_id, dipper_date, time, dipper);
+        return new ResponseEntity<>("Dipper set successfully", HttpStatus.OK);
+    }
+
+    @PostMapping("/set_baby_food")
+    public ResponseEntity<String> setBabyFood(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
+    {
+        UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
+        String dipper_date = (String) babyMap.get("date");
+        String dipper = (String) babyMap.get("dipper");
         return new ResponseEntity<>("Dipper set successfully", HttpStatus.OK);
     }
 }

@@ -20,5 +20,7 @@ public interface BabyRepository {
 
     void update_baby_weight(UUID baby_id, double weight) throws EtResourceNotFoundException;
 
-    BabyFullInfo getBabyFullInfoForDate(UUID baby_id, String date);
+    List<BabyFullInfo> getBabyFullInfoForDate(UUID baby_id, String date);
+
+    void setDipper(UUID baby_id, String dipper_date, String time, String dipper);
 }
