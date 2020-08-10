@@ -56,17 +56,19 @@ public class BabyRepositoryImpl implements BabyRepository{
             "date_measure varchar(50) not null," +
             "time_measure varchar(50) not null," +
             "baby_weight double precision not null," +
-            "dipper varchar(50)," +
+            "wet_diaper BIT," +
+            "dirty_diaper BIT," +
             "feed_amount integer," +
             "breast_side varchar(50)," +
             "breast_feeding_time_length integer," +
             "sleeping_time integer," +
+            "feed_type varchar(50)" +
             "CONSTRAINT B_I_KEY primary key (date_measure, time_measure)" +
             ");";
 
-    private static final String SQL_INSERT_BABY_INFO_TABLE = "insert into %s (date_measure, time_measure, dipper, feed_amount, " +
-            "breast_side, sleeping_time) " +
-            "values (?, ?, ?, ?, ?, ?)";
+    private static final String SQL_INSERT_BABY_INFO_TABLE = "insert into %s (date_measure, time_measure, baby_weight, wet_diaper," +
+            "dirty_diaper, feed_amount, breast_side, breast_feeding_time_length, sleeping_time, feed_type) " +
+            "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private static final String SQL_GET_BABY_INFO = "select * " +
             "from %s " +
@@ -151,13 +153,20 @@ public class BabyRepositoryImpl implements BabyRepository{
 
         try {
             jdbcTemplate.execute(create_table_weight);
-            update_baby_weight(uuid, weight);
+            String today = get_today();
+
+            update_baby_weight(uuid, weight, today);
         }
 
         catch (Exception e)
         {
             throw new EtResourceFoundException("Failed to create baby's weight table");
         }
+    }
+
+    private String get_today() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd ");
+        return LocalDateTime.now().toString();
     }
 
     @Override
@@ -172,17 +181,13 @@ public class BabyRepositoryImpl implements BabyRepository{
     }
 
     @Override
-    public void update_baby_weight(UUID baby_id, double weight) throws EtResourceNotFoundException {
+    public void update_baby_weight(UUID baby_id, double weight, String measure_date) throws EtResourceNotFoundException {
         String table_name = String.format("baby_%s_weight", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
         String update_weight_table = String.format(SQL_INSERT_INTO_WEIGHT_BABY_TABLE, table_name);
         try {
-            //Get today date
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            String today = LocalDateTime.now().toString();
-
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(update_weight_table, PreparedStatement.RETURN_GENERATED_KEYS);
-                ps.setString(1, today);
+                ps.setString(1, measure_date);
                 ps.setDouble(2, weight);
                 return ps;
             });
@@ -206,21 +211,54 @@ public class BabyRepositoryImpl implements BabyRepository{
     }
 
     @Override
-    public void setDipper(UUID baby_id, String measure_date, String measure_time, String dipper) {
+    public void setDiaper(UUID baby_id, String measure_date, String measure_time, Boolean wet_diaper, Boolean dirty_diaper) {
         String table_name = String.format("baby_%s_full_info", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
+
         // Insert sql into table baby info
-        String create_table_weight = String.format(SQL_INSERT_BABY_INFO_TABLE, table_name);
+        String setBabyDiqper = String.format(SQL_INSERT_BABY_INFO_TABLE, table_name);
         double baby_weight = get_baby_weight(baby_id, measure_date);
         try{
             jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(create_table_weight, PreparedStatement.RETURN_GENERATED_KEYS);
-                ps.setString(1, measure_date);
-                ps.setString(2, measure_time);
-                ps.setString(3, dipper);
-                ps.setObject(4, null);
-                ps.setObject(5, null);
-                ps.setObject(5, null);
-                ps.setObject(6, null);
+                PreparedStatement ps = connection.prepareStatement(setBabyDiqper, PreparedStatement.RETURN_GENERATED_KEYS);
+                ps.setString(1, measure_date);  // measure date
+                ps.setString(2, measure_time);  // measure time
+                ps.setDouble(3, baby_weight);   // baby weight
+                ps.setBoolean(4, wet_diaper);   // wet diaper
+                ps.setBoolean(5, dirty_diaper); // dirty diaper
+                ps.setObject(6, null);        // feed amount
+                ps.setObject(7, null);        // breast_side
+                ps.setObject(8, null);        // breast_feeding_time_length
+                ps.setObject(9, null);        // sleeping_time
+                ps.setObject(10, null);       // feed_type
+                return ps;
+            });
+        }
+        catch (Exception e){
+            throw new EtResourceNotFoundException("Can't set diaper replacement");
+        }
+    }
+
+    @Override
+    public void setSleepingTime(UUID baby_id, String measure_date, String measure_time, int sleeping_time) {
+        String table_name = String.format("baby_%s_full_info", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
+
+        // Insert sql into table baby info
+        String setBabyDiqper = String.format(SQL_INSERT_BABY_INFO_TABLE, table_name);
+        double baby_weight = get_baby_weight(baby_id, measure_date);
+
+        try{
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(setBabyDiqper, PreparedStatement.RETURN_GENERATED_KEYS);
+                ps.setString(1, measure_date);   // measure date
+                ps.setString(2, measure_time);   // measure time
+                ps.setDouble(3, baby_weight);    // baby weight
+                ps.setObject(4, null);         // wet diaper
+                ps.setObject(5, null);         // dirty diaper
+                ps.setObject(6, null);         // feed amount
+                ps.setObject(7, null);         // breast_side
+                ps.setObject(8, null);         // breast_feeding_time_length
+                ps.setInt(9, sleeping_time);     // sleeping_time
+                ps.setObject(10, null);        // feed_type
                 return ps;
             });
         }
@@ -281,14 +319,17 @@ public class BabyRepositoryImpl implements BabyRepository{
 
     private RowMapper<BabyFullInfo> babyFullInfoRowMapper = ((rs, rowNum) ->{
        return new BabyFullInfo(
-            rs.getString("dipper_date"),
-            rs.getInt("feed_amount"),
-            rs.getString("measure_time"),
-            rs.getString("measure_date"),
-            rs.getString("breast_side"),
-            rs.getInt("breast_feeding_time_length"),
-            rs.getInt("sleeping_time")
-       );
+               rs.getString("measure_date"),
+               rs.getString("measure_time"),
+               rs.getDouble("weight"),
+               rs.getBoolean("wet_diaper"),
+               rs.getBoolean("dirty_diaper"),
+               rs.getInt("feed_amount"),
+               rs.getString("breast_side"),
+               rs.getInt("breast_feeding_time_length"),
+               rs.getInt("sleeping_time"),
+               rs.getString("feed_type")
+        );
     });
 
     private RowMapper<Weight> babyWeightRowMapper = ((rs,rowNum)->{

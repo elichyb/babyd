@@ -18,9 +18,11 @@ public interface BabyRepository {
 
     void removeBaby(UUID parent_id, UUID baby_id) throws EtResourceNotFoundException;
 
-    void update_baby_weight(UUID baby_id, double weight) throws EtResourceNotFoundException;
+    void update_baby_weight(UUID baby_id, double weight, String measure_date) throws EtResourceNotFoundException;
 
     List<BabyFullInfo> getBabyFullInfoForDate(UUID baby_id, String date);
 
-    void setDipper(UUID baby_id, String dipper_date, String time, String dipper);
+    void setDiaper(UUID baby_id, String measure_date, String measure_time, Boolean wet_diaper, Boolean dirty_diaper);
+
+    void setSleepingTime(UUID baby_id, String measure_date, String measure_time, int sleeping_time);
 }

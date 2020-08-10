@@ -21,9 +21,11 @@ public interface BabyService {
 
     void removeBaby(UUID parent_id, UUID baby_id) throws EtResourceNotFoundException;
 
-    void setBabyWeight(UUID baby_id, double weight) throws EtUnableConnectToDB;
+    void setBabyWeight(UUID baby_id, double weight, String measure_date) throws EtUnableConnectToDB;
 
     List<BabyFullInfo> getBabyFullInfoForDate(UUID baby_id, String date) throws EtResourceNotFoundException;
 
-    void setDipper(UUID baby_id, String dipper_date, String time, String dipper) throws EtUnableConnectToDB;
+    void setDiaper(UUID baby_id, String diaper_date, String time, Boolean wetDiaper, Boolean dirtyDiaper) throws EtResourceNotFoundException;
+
+    void setSleepingTime(UUID baby_id, String measure_date, String measure_time, int sleeping_time) throws EtResourceNotFoundException;
 }

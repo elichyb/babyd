@@ -47,9 +47,9 @@ public class BabyServiceImpl implements BabyService {
     }
 
     @Override
-    public void setBabyWeight(UUID baby_id, double weight) throws EtUnableConnectToDB {
+    public void setBabyWeight(UUID baby_id, double weight, String measure_date) throws EtUnableConnectToDB {
         try {
-            babyRepository.update_baby_weight(baby_id, weight);
+            babyRepository.update_baby_weight(baby_id, weight, measure_date);
         }
         catch (Exception e){
             throw new EtUnableConnectToDB("Failed to set new weight");
@@ -68,14 +68,21 @@ public class BabyServiceImpl implements BabyService {
     }
 
     @Override
-    public void setDipper(UUID baby_id, String dipper_date, String time, String dipper) {
+    public void setDiaper(UUID baby_id, String measuer_date, String measure_time, Boolean wet_diaper, Boolean dirty_diaper) {
         Pattern date_attern = Pattern.compile("^\\d{4}(-)(((0)[0-9])|((1)[0-2]))(-)([0-2][0-9]|(3)[0-1])$");
         Pattern time_attern = Pattern.compile("^\\d{2}:\\d{2}:\\d{2}$");
-        if ((! date_attern.matcher(dipper_date).matches()) || (! time_attern.matcher(time).matches()))
+        if ((! date_attern.matcher(measuer_date).matches()) || (! time_attern.matcher(measure_time).matches()))
             throw new EtResourceNotFoundException("Problem in the data we got Date/Time isn't send good");
-        if ((!dipper.equals("wet")) && (!dipper.equals("dirty")))
-            throw new EtResourceNotFoundException("Problem in the data we got dipper that isn't wet nor dirty");
+        babyRepository.setDiaper( baby_id, measuer_date, measure_time, wet_diaper, dirty_diaper);
+    }
 
-        babyRepository.setDipper( baby_id, dipper_date, time, dipper);
+    @Override
+    public void setSleepingTime(UUID baby_id, String measure_date, String measure_time, int sleeping_time) {
+        Pattern date_attern = Pattern.compile("^\\d{4}(-)(((0)[0-9])|((1)[0-2]))(-)([0-2][0-9]|(3)[0-1])$");
+        Pattern time_attern = Pattern.compile("^\\d{2}:\\d{2}:\\d{2}$");
+        if ((! date_attern.matcher(measure_date).matches()) || (! time_attern.matcher(measure_time).matches()))
+            throw new EtResourceNotFoundException("Problem in the data we got Date/Time isn't send good");
+
+        babyRepository.setSleepingTime(baby_id, measure_date, measure_time, sleeping_time);
     }
 }

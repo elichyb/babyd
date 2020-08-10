@@ -65,16 +65,6 @@ public class BabyController {
         return new ResponseEntity<>(baby, HttpStatus.OK);
     }
 
-    @PostMapping("/set_weight")
-    public ResponseEntity<String> setWeight(HttpServletRequest request,
-                                            @RequestBody Map<String, Object> babyMap)
-    {
-        UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
-        double weight = Double.parseDouble((String) babyMap.get("weight").toString());
-        babyService.setBabyWeight(baby_id, weight);
-        return new ResponseEntity<>("Baby weight set successfully", HttpStatus.OK);
-    }
-
     @GetMapping("/get_baby_full_info_for_today")
     public ResponseEntity<List<BabyFullInfo>> getBabyFullInfo(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
     {
@@ -84,14 +74,27 @@ public class BabyController {
         return new ResponseEntity<>(babyFullInfo, HttpStatus.OK);
     }
 
-    @PostMapping("/set_baby_dipper")
+    @PostMapping("/set_weight")
+    public ResponseEntity<String> setWeight(HttpServletRequest request,
+                                            @RequestBody Map<String, Object> babyMap)
+    {
+        UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
+        double weight = Double.parseDouble((String) babyMap.get("weight").toString());
+        String measure_date = (String) babyMap.get("date");
+        babyService.setBabyWeight(baby_id, weight, measure_date);
+        return new ResponseEntity<>("Baby weight set successfully", HttpStatus.OK);
+    }
+
+    @PostMapping("/set_diaper")
     public ResponseEntity<String> setBabyDipper(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
     {
         UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
-        String dipper_date = (String) babyMap.get("date");
-        String time = (String) babyMap.get("time");
-        String dipper = (String) babyMap.get("dipper");
-        babyService.setDipper(baby_id, dipper_date, time, dipper);
+        String measure_date = (String) babyMap.get("date");
+        String measure_time = (String) babyMap.get("time");
+        Boolean wet_diaper = (Boolean) babyMap.get("wet");
+        Boolean dirty_diaper = (Boolean) babyMap.get("dirty");
+
+        babyService.setDiaper(baby_id, measure_date, measure_time, wet_diaper, dirty_diaper);
         return new ResponseEntity<>("Dipper set successfully", HttpStatus.OK);
     }
 
@@ -101,6 +104,18 @@ public class BabyController {
         UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
         String dipper_date = (String) babyMap.get("date");
         String dipper = (String) babyMap.get("dipper");
+        return new ResponseEntity<>("Dipper set successfully", HttpStatus.OK);
+    }
+
+    @PostMapping("/set_sleep")
+    public ResponseEntity<String> setBabySleep(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
+    {
+        UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
+        String measure_date = (String) babyMap.get("date");
+        String measure_time = (String) babyMap.get("time");
+        int sleeping_time = (int) babyMap.get("sleeping_time");
+
+        babyService.setSleepingTime(baby_id, measure_date, measure_time, sleeping_time);
         return new ResponseEntity<>("Dipper set successfully", HttpStatus.OK);
     }
 }
