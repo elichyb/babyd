@@ -25,7 +25,16 @@ public interface BabyService {
 
     List<BabyFullInfo> getBabyFullInfoForDate(UUID baby_id, String date) throws EtResourceNotFoundException;
 
-    void setDiaper(UUID baby_id, String diaper_date, String time, Boolean wetDiaper, Boolean dirtyDiaper) throws EtResourceNotFoundException;
+    void setDiaper(UUID baby_id, String diaper_date, String time, Boolean wetDiaper, Boolean dirtyDiaper)
+            throws EtResourceNotFoundException;
 
-    void setSleepingTime(UUID baby_id, String measure_date, String measure_time, int sleeping_time) throws EtResourceNotFoundException;
+    void setSleepingTime(UUID baby_id, String measure_date, String measure_time, int sleeping_time)
+            throws EtResourceNotFoundException;
+
+    void setFormula(UUID baby_id, String measure_date, String measure_time, int amount, String feed_type)
+            throws EtResourceFoundException;
+
+    void setBreast(UUID baby_id, String measure_date, String measure_time, String breast_side,
+                   int breast_feeding_time_length, String feed_type)
+            throws EtResourceFoundException;
 }

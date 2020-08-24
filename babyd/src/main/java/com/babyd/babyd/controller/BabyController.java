@@ -98,14 +98,33 @@ public class BabyController {
         return new ResponseEntity<>("Dipper set successfully", HttpStatus.OK);
     }
 
-    @PostMapping("/set_baby_food")
-    public ResponseEntity<String> setBabyFood(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
+    @PostMapping("/set_formula")
+    public ResponseEntity<String> setBabyFormula(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
     {
         UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
-        String dipper_date = (String) babyMap.get("date");
-        String dipper = (String) babyMap.get("dipper");
+        String measure_date = (String) babyMap.get("date");
+        String measure_time = (String) babyMap.get("time");
+        int amount = Integer.parseInt((String) babyMap.get("amount"));
+        String feed_type = (String) babyMap.get("feed_type");
+
+        babyService.setFormula(baby_id, measure_date, measure_time, amount, feed_type);
+        return new ResponseEntity<>("Feeding set successfully", HttpStatus.OK);
+    }
+
+    @PostMapping("/set_breast")
+    public ResponseEntity<String> setBabyBreast(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
+    {
+        UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
+        String measure_date = (String) babyMap.get("date");
+        String measure_time = (String) babyMap.get("time");
+        String breast_side = (String) babyMap.get("breast_side");
+        int breast_feeding_time_length = Integer.parseInt((String) babyMap.get("breast_feeding_time_length"));
+        String feed_type = (String) babyMap.get("feed_type");
+
+        babyService.setBreast(baby_id, measure_date, measure_time, breast_side, breast_feeding_time_length, feed_type);
         return new ResponseEntity<>("Dipper set successfully", HttpStatus.OK);
     }
+
 
     @PostMapping("/set_sleep")
     public ResponseEntity<String> setBabySleep(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)

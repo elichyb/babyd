@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-
 import java.sql.PreparedStatement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -243,12 +242,12 @@ public class BabyRepositoryImpl implements BabyRepository{
         String table_name = String.format("baby_%s_full_info", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
 
         // Insert sql into table baby info
-        String setBabyDiqper = String.format(SQL_INSERT_BABY_INFO_TABLE, table_name);
+        String setBabyDiaper = String.format(SQL_INSERT_BABY_INFO_TABLE, table_name);
         double baby_weight = get_baby_weight(baby_id, measure_date);
 
         try{
             jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(setBabyDiqper, PreparedStatement.RETURN_GENERATED_KEYS);
+                PreparedStatement ps = connection.prepareStatement(setBabyDiaper, PreparedStatement.RETURN_GENERATED_KEYS);
                 ps.setString(1, measure_date);   // measure date
                 ps.setString(2, measure_time);   // measure time
                 ps.setDouble(3, baby_weight);    // baby weight
@@ -263,7 +262,65 @@ public class BabyRepositoryImpl implements BabyRepository{
             });
         }
         catch (Exception e){
-            throw new EtResourceNotFoundException("Can't set dipper replacement");
+            throw new EtResourceNotFoundException("Can't set diaper replacement");
+        }
+    }
+
+    @Override
+    public void setFormula(UUID baby_id, String measure_date, String measure_time, int amount, String feed_type) {
+        String table_name = String.format("baby_%s_full_info", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
+
+        // Insert sql into table baby info
+        String setBabyFormula = String.format(SQL_INSERT_BABY_INFO_TABLE, table_name);
+        double baby_weight = get_baby_weight(baby_id, measure_date);
+
+        try{
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(setBabyFormula, PreparedStatement.RETURN_GENERATED_KEYS);
+                ps.setString(1, measure_date);   // measure date
+                ps.setString(2, measure_time);   // measure time
+                ps.setDouble(3, baby_weight);    // baby weight
+                ps.setObject(4, null);         // wet diaper
+                ps.setObject(5, null);         // dirty diaper
+                ps.setInt(6, amount);            // feed amount
+                ps.setObject(7, null);         // breast_side
+                ps.setObject(8, null);         // breast_feeding_time_length
+                ps.setObject(9, null);         // sleeping_time
+                ps.setString(10, feed_type);     // feed_type
+                return ps;
+            });
+        }
+        catch (Exception e){
+            throw new EtResourceNotFoundException("Can't set Feeding replacement");
+        }
+    }
+
+    @Override
+    public void setBreast(UUID baby_id, String measure_date, String measure_time, String breast_side, int breast_feeding_time_length, String feed_type) {
+        String table_name = String.format("baby_%s_full_info", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
+
+        // Insert sql into table baby info
+        String setBabyBreast = String.format(SQL_INSERT_BABY_INFO_TABLE, table_name);
+        double baby_weight = get_baby_weight(baby_id, measure_date);
+
+        try{
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(setBabyBreast, PreparedStatement.RETURN_GENERATED_KEYS);
+                ps.setString(1, measure_date);              // measure date
+                ps.setString(2, measure_time);              // measure time
+                ps.setDouble(3, baby_weight);               // baby weight
+                ps.setObject(4, null);                    // wet diaper
+                ps.setObject(5, null);                    // dirty diaper
+                ps.setObject(6, null);                    // feed amount
+                ps.setString(7, breast_side);               // breast_side
+                ps.setInt(8, breast_feeding_time_length);   // breast_feeding_time_length
+                ps.setObject(9, null);                    // sleeping_time
+                ps.setString(10, feed_type);                // feed_type
+                return ps;
+            });
+        }
+        catch (Exception e){
+            throw new EtResourceNotFoundException("Can't set Feeding replacement");
         }
     }
 

@@ -68,21 +68,34 @@ public class BabyServiceImpl implements BabyService {
     }
 
     @Override
-    public void setDiaper(UUID baby_id, String measuer_date, String measure_time, Boolean wet_diaper, Boolean dirty_diaper) {
-        Pattern date_attern = Pattern.compile("^\\d{4}(-)(((0)[0-9])|((1)[0-2]))(-)([0-2][0-9]|(3)[0-1])$");
-        Pattern time_attern = Pattern.compile("^\\d{2}:\\d{2}:\\d{2}$");
-        if ((! date_attern.matcher(measuer_date).matches()) || (! time_attern.matcher(measure_time).matches()))
-            throw new EtResourceNotFoundException("Problem in the data we got Date/Time isn't send good");
-        babyRepository.setDiaper( baby_id, measuer_date, measure_time, wet_diaper, dirty_diaper);
+    public void setDiaper(UUID baby_id, String measure_date, String measure_time, Boolean wet_diaper, Boolean dirty_diaper) {
+        check_format_date_and_time(measure_date, measure_time);
+        babyRepository.setDiaper( baby_id, measure_date, measure_time, wet_diaper, dirty_diaper);
     }
 
     @Override
     public void setSleepingTime(UUID baby_id, String measure_date, String measure_time, int sleeping_time) {
+        check_format_date_and_time(measure_date, measure_time);
+        babyRepository.setSleepingTime(baby_id, measure_date, measure_time, sleeping_time);
+    }
+
+    @Override
+    public void setFormula(UUID baby_id, String measure_date, String measure_time, int amount, String feed_type) throws EtResourceFoundException {
+        check_format_date_and_time(measure_date, measure_time);
+        babyRepository.setFormula(baby_id, measure_date, measure_time, amount, feed_type);
+    }
+
+    @Override
+    public void setBreast(UUID baby_id, String measure_date, String measure_time, String breast_side, int breast_feeding_time_length, String feed_type) throws EtResourceFoundException {
+        check_format_date_and_time(measure_date, measure_time);
+        babyRepository.setBreast(baby_id, measure_date, measure_time, breast_side, breast_feeding_time_length, feed_type);
+    }
+
+    private void check_format_date_and_time(String date, String time)
+    {
         Pattern date_attern = Pattern.compile("^\\d{4}(-)(((0)[0-9])|((1)[0-2]))(-)([0-2][0-9]|(3)[0-1])$");
         Pattern time_attern = Pattern.compile("^\\d{2}:\\d{2}:\\d{2}$");
-        if ((! date_attern.matcher(measure_date).matches()) || (! time_attern.matcher(measure_time).matches()))
+        if ((! date_attern.matcher(date).matches()) || (! time_attern.matcher(time).matches()))
             throw new EtResourceNotFoundException("Problem in the data we got Date/Time isn't send good");
-
-        babyRepository.setSleepingTime(baby_id, measure_date, measure_time, sleeping_time);
     }
 }
