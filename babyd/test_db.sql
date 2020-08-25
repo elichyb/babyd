@@ -9,6 +9,7 @@ create table parent (
     first_name varchar (50) not null,
     last_name varchar (50) not null,
     email varchar (50) not null,
+    phone varchar (50) not null,
     password text not null
 );
 

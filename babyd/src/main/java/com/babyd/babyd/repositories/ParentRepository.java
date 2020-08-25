@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ParentRepository {
-    UUID createParent(String first_name, String last_name, String email, String password) throws EtAuthException;
+    UUID createParent(String first_name, String last_name, String email, String phone, String password) throws EtAuthException;
 
     Parent findByEmailAndPassword(String email, String password) throws EtAuthException;
 

@@ -28,8 +28,8 @@ import java.util.UUID;
 @Repository
 public class ParentRepositoryImpl implements ParentRepository {
 
-    private static final String SQL_INSERT_TO_PARENT = "insert into parent (parent_id, first_name, last_name, email, password) " +
-            "values (?, ?, ?, ?, ?)";
+    private static final String SQL_INSERT_TO_PARENT = "insert into parent (parent_id, first_name, last_name, email, phone, password) " +
+            "values (?, ?, ?, ?, ?, ?)";
     private static final String SQL_GET_ALL_PARENTS = "select *from parent";
     private static final String SQL_COUNT_BY_EMAIL = "select count(*) from parent where email=?";
     private static final String SQL_FIND_BY_PARENT_ID = "select parent_id, first_name, last_name, email, password from parent where parent_id=?";
@@ -41,7 +41,7 @@ public class ParentRepositoryImpl implements ParentRepository {
     JdbcTemplate jdbcTemplate;
 
     @Override
-    public UUID createParent(String first_name, String last_name, String email, String password) throws EtAuthException {
+    public UUID createParent(String first_name, String last_name, String email, String phone, String password) throws EtAuthException {
         UUID parent_id = UUID.randomUUID(); // here we generate parent UUID;
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(10));
         try {
@@ -51,7 +51,8 @@ public class ParentRepositoryImpl implements ParentRepository {
                 ps.setString(2, first_name);
                 ps.setString(3, last_name);
                 ps.setString(4, email);
-                ps.setString(5, hashedPassword);
+                ps.setString(5, phone);
+                ps.setString(6, hashedPassword);
                 return ps;
             });
             return parent_id;
@@ -106,6 +107,7 @@ public class ParentRepositoryImpl implements ParentRepository {
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("email"),
+                rs.getString("phone"),
                 rs.getString("password")
         );
     });

@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -37,19 +38,20 @@ public class ParentController {
     MailService mailService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerParent(@RequestBody Map<String, Object> ParentMap)
+    public ResponseEntity<String> registerParent(HttpServletRequest request, @RequestBody Map<String, Object> ParentMap)
     {
         String first_name = (String) ParentMap.get("first_name");
         String last_name = (String) ParentMap.get("last_name");
         String email = (String) ParentMap.get("email");
+        String phone = (String) ParentMap.get("phone");
         String password = (String) ParentMap.get("password");
-        parentService.registerParent(first_name, last_name, email, password);
+        parentService.registerParent(first_name, last_name, email, phone, password);
         mailService.sendMail(email, first_name);
         return new ResponseEntity<>("Registration completed", HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> loginParnt(@RequestBody Map<String, Object> parentMap)
+    public ResponseEntity<Map<String, String>> loginParnt(HttpServletRequest request, @RequestBody Map<String, Object> parentMap)
     {
         String email = (String) parentMap.get("email");
         String password = (String) parentMap.get("password");
@@ -77,7 +79,6 @@ public class ParentController {
         long timestamp = System.currentTimeMillis();
         String token = Jwts.builder().signWith(SignatureAlgorithm.HS256, Constants.API_SECRET_KEY)
                 .setIssuedAt(new Date(timestamp))
-//                .setExpiration(new Date(timestamp + Constants.TOKEN_VALIDITY))
                 .claim("parent id", parent.getParent_id())
                 .claim("first name", parent.getFirst_name())
                 .claim("last name", parent.getLast_name())

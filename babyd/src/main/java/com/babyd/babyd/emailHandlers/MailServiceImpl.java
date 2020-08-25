@@ -56,7 +56,7 @@ public class MailServiceImpl implements MailService{
             message.setSubject("Thanks for registration!");
 
             // Set email body
-            message.setText(String.format("Thanks %s\n for join to Baby-D app," +
+            message.setText(String.format("Thanks %s,\nfor join to Baby-D app," +
                     "\n" +
                     "Hope you will join to use this app\n" +
                     "If you have any issues/suggestion you can contact us directly\n" +

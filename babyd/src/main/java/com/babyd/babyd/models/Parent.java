@@ -18,14 +18,24 @@ public class Parent {
     private String first_name;
     private String last_name;
     private String email;
+    private String phone;
     private String password;
 
-    public Parent(UUID parent_id, String first_name, String last_name, String email, String password) {
+    public Parent(UUID parent_id, String first_name, String last_name, String email, String phone, String password) {
         this.parent_id = parent_id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.email = email;
+        this.phone = phone;
         this.password = password;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public UUID getParent_id() {
