@@ -71,8 +71,8 @@ public class BabyRepositoryImpl implements BabyRepository{
             "breast_side varchar(50)," +
             "breast_feeding_time_length integer," +
             "sleeping_time integer," +
-            "feed_type varchar(50)" +
-            "CONSTRAINT B_I_KEY primary key (date_measure, time_measure)" +
+            "feed_type varchar(50)," +
+            "CONSTRAINT KEY_%s primary key (date_measure, time_measure)" +
             ");";
 
     private static final String SQL_INSERT_BABY_INFO_TABLE = "insert into %s (date_measure, time_measure, baby_weight, wet_diaper," +
@@ -144,7 +144,7 @@ public class BabyRepositoryImpl implements BabyRepository{
         String table_name = String.format("baby_%s_full_info", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
 
         // Create table baby full info
-        String create_table_baby_full_info = String.format(SQL_CREATE_TABLE_BABY_FULL_INFO, table_name);
+        String create_table_baby_full_info = String.format(SQL_CREATE_TABLE_BABY_FULL_INFO, table_name, String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
         try {
             jdbcTemplate.execute(create_table_baby_full_info);
         }

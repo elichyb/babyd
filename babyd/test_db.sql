@@ -27,14 +27,4 @@ create table parent_baby_relation (
     CONSTRAINT P_B_KEY primary key (parent_id, baby_id)
 );
 
-create table baby_wight_relation (
-    baby_id uuid primary key not null,
-    wight_table_id uuid not null
-);
-
-create table baby_feed_relation (
-    baby uuid primary key not null,
-    feed_table_id uuid not null
-);
-
 

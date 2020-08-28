@@ -33,7 +33,7 @@ public class ParentServiceImpl implements ParentService {
     }
 
     @Override
-    public void registerParent(String first_name, String last_name, String email, String phone, String password)
+    public Parent registerParent(String first_name, String last_name, String email, String phone, String password)
             throws EtAuthException {
         Pattern pattern = Pattern.compile("^(.+)@(.+)$"); //email validator pattern.
         if (email != null) email = email.toLowerCase(); // validate emil isn't null
@@ -42,6 +42,8 @@ public class ParentServiceImpl implements ParentService {
         Integer count = parentRepository.getCountByEmail(email);
         if (count > 0) throw new EtAuthException("Email already in use");
         UUID parentId = parentRepository.createParent(first_name, last_name, email, phone, password);
+        Parent p = new Parent(parentId, first_name, last_name, email, phone, password);
+        return p;
     }
 
     @Override

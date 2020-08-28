@@ -38,16 +38,17 @@ public class ParentController {
     MailService mailService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerParent(HttpServletRequest request, @RequestBody Map<String, Object> ParentMap)
+    public ResponseEntity<Map<String,String>> registerParent(HttpServletRequest request, @RequestBody Map<String, Object> ParentMap)
     {
         String first_name = (String) ParentMap.get("first_name");
         String last_name = (String) ParentMap.get("last_name");
         String email = (String) ParentMap.get("email");
         String phone = (String) ParentMap.get("phone");
         String password = (String) ParentMap.get("password");
-        parentService.registerParent(first_name, last_name, email, phone, password);
+        Parent p = parentService.registerParent(first_name, last_name, email, phone, password);
         mailService.sendMail(email, first_name);
-        return new ResponseEntity<>("Registration completed", HttpStatus.OK);
+
+        return new ResponseEntity<>(generateJWTToken(p), HttpStatus.OK);
     }
 
     @PostMapping("/login")

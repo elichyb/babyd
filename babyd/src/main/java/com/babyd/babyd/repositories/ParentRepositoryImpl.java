@@ -32,8 +32,8 @@ public class ParentRepositoryImpl implements ParentRepository {
             "values (?, ?, ?, ?, ?, ?)";
     private static final String SQL_GET_ALL_PARENTS = "select *from parent";
     private static final String SQL_COUNT_BY_EMAIL = "select count(*) from parent where email=?";
-    private static final String SQL_FIND_BY_PARENT_ID = "select parent_id, first_name, last_name, email, password from parent where parent_id=?";
-    private static final String SQL_FIND_BY_PARENT_EMAIL = "select parent_id, first_name, last_name, email, password from parent where email=?";
+    private static final String SQL_FIND_BY_PARENT_ID = "select parent_id, first_name, last_name, email, phone, password from parent where parent_id=?";
+    private static final String SQL_FIND_BY_PARENT_EMAIL = "select parent_id, first_name, last_name, email, phone, password from parent where email=?";
     private static final String SQL_DELETE_ALL_PARENTS = "delete from parent";
 
 

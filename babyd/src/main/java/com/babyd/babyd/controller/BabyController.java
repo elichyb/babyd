@@ -61,7 +61,7 @@ public class BabyController {
 
         Baby baby = babyService.addBaby(parent_id, first_name, last_name, food_type, birth_day, weight);
         Map<String,String> map = new HashMap<>();
-        map.put("successfuly add baby", baby.getId().toString());
+        map.put("Successfully add baby", baby.getId().toString());
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
@@ -75,7 +75,7 @@ public class BabyController {
         return new ResponseEntity<>(baby, HttpStatus.OK);
     }
 
-    @GetMapping("/get_baby_full_info_for_today")
+    @PostMapping("/get_baby_full_info_for_today")
     public ResponseEntity<List<BabyFullInfo>> getBabyFullInfo(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
     {
         UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));

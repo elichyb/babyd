@@ -46,7 +46,7 @@ public class BabyServiceImpl implements BabyService {
             throws EtResourceFoundException {
         Pattern pattern = Pattern.compile("^\\d{4}(-)(((0)[0-9])|((1)[0-2]))(-)([0-2][0-9]|(3)[0-1])$"); // validate date pattern
         if (! pattern.matcher(birth_day).matches())
-            throw new EtBadBirthdayFormat("birth day is in the wrong format");
+            throw new EtBadBirthdayFormat("Birth day is in the wrong format");
         UUID baby_id = babyRepository.createBaby(parent_id, first_name, last_name, food_type, birth_day, weight);
         return new Baby(baby_id, first_name, last_name, food_type, birth_day);
     }
