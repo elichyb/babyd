@@ -27,4 +27,3 @@ create table parent_baby_relation (
     CONSTRAINT P_B_KEY primary key (parent_id, baby_id)
 );
 
-

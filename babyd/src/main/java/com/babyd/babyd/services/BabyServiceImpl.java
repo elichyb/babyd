@@ -104,7 +104,7 @@ public class BabyServiceImpl implements BabyService {
     private void check_format_date_and_time(String date, String time)
     {
         Pattern date_attern = Pattern.compile("^\\d{4}(-)(((0)[0-9])|((1)[0-2]))(-)([0-2][0-9]|(3)[0-1])$");
-        Pattern time_attern = Pattern.compile("^\\d{2}:\\d{2}:\\d{2}$");
+        Pattern time_attern = Pattern.compile("^\\d{2}:\\d{2}:\\d{2}.*$");
         if ((! date_attern.matcher(date).matches()) || (! time_attern.matcher(time).matches()))
             throw new EtResourceNotFoundException("Problem in the data we got Date/Time isn't send good");
     }

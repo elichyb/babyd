@@ -85,18 +85,20 @@ public class BabyController {
     }
 
     @PostMapping("/set_weight")
-    public ResponseEntity<String> setWeight(HttpServletRequest request,
+    public ResponseEntity<Map<String,String>> setWeight(HttpServletRequest request,
                                             @RequestBody Map<String, Object> babyMap)
     {
         UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
         double weight = Double.parseDouble((String) babyMap.get("weight").toString());
         String measure_date = (String) babyMap.get("date");
         babyService.setBabyWeight(baby_id, weight, measure_date);
-        return new ResponseEntity<>("Baby weight set successfully", HttpStatus.OK);
+        Map<String, String> m = new HashMap<>();
+        m.put("Status", "Baby weight set successfully");
+        return new ResponseEntity<>(m, HttpStatus.OK);
     }
 
     @PostMapping("/set_diaper")
-    public ResponseEntity<String> setBabyDipper(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
+    public ResponseEntity<Map<String,String>> setBabyDipper(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
     {
         UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
         String measure_date = (String) babyMap.get("date");
@@ -105,7 +107,9 @@ public class BabyController {
         Boolean dirty_diaper = (Boolean) babyMap.get("dirty");
 
         babyService.setDiaper(baby_id, measure_date, measure_time, wet_diaper, dirty_diaper);
-        return new ResponseEntity<>("Dipper set successfully", HttpStatus.OK);
+        Map<String, String> m = new HashMap<>();
+        m.put("Status", "Diaper set successfully");
+        return new ResponseEntity<>(m, HttpStatus.OK);
     }
 
     @PostMapping("/set_formula")

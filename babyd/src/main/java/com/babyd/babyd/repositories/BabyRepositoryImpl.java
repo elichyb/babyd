@@ -53,20 +53,21 @@ public class BabyRepositoryImpl implements BabyRepository{
             "where baby_id in " +
             "(select baby_id from parent_baby_relation where parent_id=? and baby_id=?)";
 
-    private static final String SQL_BABY_WEIGHT_TABLE_CREATE = "create table %s (" +
+    private static final String SQL_BABY_WEIGHT_TABLE_CREATE = "create table %s ("+
+            "row_num integer not null," +
             "weight_date varchar(50) primary key  not null," +
-            "weight double precision not null);";
+            "weight double precision not null)";
 
-    private static final String SQL_GET_BABY_WEIGHT = "seleft * from %s";
+    private static final String SQL_GET_BABY_WEIGHT = "SELECT * FROM %s ORDER BY row_num DESC LIMIT 1";
 
-    private static final String SQL_INSERT_INTO_WEIGHT_BABY_TABLE = "insert into %s (weight_date, weight) values (?, ?)";
+    private static final String SQL_INSERT_INTO_WEIGHT_BABY_TABLE = "insert into %s (row_num, weight_date, weight) values (NEXTVAL('%s'), ?, ?)";
 
     private static final String SQL_CREATE_TABLE_BABY_FULL_INFO = "create table %s (" +
             "date_measure varchar(50) not null," +
             "time_measure varchar(50) not null," +
             "baby_weight double precision not null," +
-            "wet_diaper BIT," +
-            "dirty_diaper BIT," +
+            "wet_diaper boolean," +
+            "dirty_diaper boolean," +
             "feed_amount integer," +
             "breast_side varchar(50)," +
             "breast_feeding_time_length integer," +
@@ -79,9 +80,7 @@ public class BabyRepositoryImpl implements BabyRepository{
             "dirty_diaper, feed_amount, breast_side, breast_feeding_time_length, sleeping_time, feed_type) " +
             "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    private static final String SQL_GET_BABY_INFO = "select * " +
-            "from %s " +
-            "where date_measure=?";
+    private static final String SQL_GET_BABY_INFO = "select * from %s where date_measure=?";
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -156,14 +155,15 @@ public class BabyRepositoryImpl implements BabyRepository{
 
     private void handle_baby_weight_table(UUID uuid, double weight) throws EtResourceFoundException{
         String table_name = String.format("baby_%s_weight", String.valueOf(uuid.getLeastSignificantBits()).substring(1));
+        String seq = "weight_" + String.valueOf(uuid.getLeastSignificantBits()).substring(1);
 
         // Create table weight
-        String create_table_weight = String.format(SQL_BABY_WEIGHT_TABLE_CREATE, table_name);
+        String create_table_weight = String.format(SQL_BABY_WEIGHT_TABLE_CREATE, table_name, seq);
 
         try {
+            jdbcTemplate.execute("CREATE SEQUENCE " + seq + " START 1");
             jdbcTemplate.execute(create_table_weight);
             String today = get_today();
-
             update_baby_weight(uuid, weight, today);
         }
 
@@ -175,7 +175,7 @@ public class BabyRepositoryImpl implements BabyRepository{
 
     private String get_today() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd ");
-        return LocalDateTime.now().toString();
+        return LocalDateTime.now().toLocalDate().toString();
     }
 
     @Override
@@ -192,7 +192,8 @@ public class BabyRepositoryImpl implements BabyRepository{
     @Override
     public void update_baby_weight(UUID baby_id, double weight, String measure_date) throws EtResourceNotFoundException {
         String table_name = String.format("baby_%s_weight", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
-        String update_weight_table = String.format(SQL_INSERT_INTO_WEIGHT_BABY_TABLE, table_name);
+        String seq = "weight_" + String.valueOf(baby_id.getLeastSignificantBits()).substring(1);
+        String update_weight_table = String.format(SQL_INSERT_INTO_WEIGHT_BABY_TABLE, table_name, seq);
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(update_weight_table, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -211,7 +212,7 @@ public class BabyRepositoryImpl implements BabyRepository{
         String table_name = String.format("baby_%s_full_info", String.valueOf(baby_id.getLeastSignificantBits()).substring(1));
         String get_baby_full_info = String.format(SQL_GET_BABY_INFO,table_name);
         try {
-            return jdbcTemplate.query(get_baby_full_info, new Object[]{date}, babyFullInfoRowMapper);
+            return jdbcTemplate.query(get_baby_full_info, new Object[] {date}, babyFullInfoRowMapper);
         }
         catch (Exception e)
         {
@@ -339,28 +340,13 @@ public class BabyRepositoryImpl implements BabyRepository{
         String sql = String.format(SQL_GET_BABY_WEIGHT, table_name);
         List<Weight> babyWeight;
         try{
-            babyWeight = jdbcTemplate.query(sql, new Object[]{measure_date}, babyWeightRowMapper);
+            babyWeight = jdbcTemplate.query(sql, new Object[] {}, babyWeightRowMapper);
         }
         catch (Exception e)
         {
             return 0.0;
         }
-
-        double weight = 0;
-        long get_measure_date = getDateFromString(measure_date).getTime();
-        long min = get_measure_date;
-
-        // Get the last baby weight measure.
-        for(Weight w : babyWeight){
-            long tmp = getDateFromString(w.getDate()).getTime();
-            long tmp_diff = get_measure_date - tmp;
-            if (min < tmp_diff && get_measure_date > tmp){
-                min = tmp_diff;
-                weight = w.getBaby_weight();
-            }
-        }
-
-        return weight;
+        return babyWeight.get(0).getBaby_weight();
     }
 
     private Date getDateFromString(String measure_date){
@@ -386,9 +372,9 @@ public class BabyRepositoryImpl implements BabyRepository{
 
     private RowMapper<BabyFullInfo> babyFullInfoRowMapper = ((rs, rowNum) ->{
        return new BabyFullInfo(
-               rs.getString("measure_date"),
-               rs.getString("measure_time"),
-               rs.getDouble("weight"),
+               rs.getString("date_measure"),
+               rs.getString("time_measure"),
+               rs.getDouble("baby_weight"),
                rs.getBoolean("wet_diaper"),
                rs.getBoolean("dirty_diaper"),
                rs.getInt("feed_amount"),
