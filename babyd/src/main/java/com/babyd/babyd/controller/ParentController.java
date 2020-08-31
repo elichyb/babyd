@@ -46,7 +46,7 @@ public class ParentController {
         String phone = (String) ParentMap.get("phone");
         String password = (String) ParentMap.get("password");
         Parent p = parentService.registerParent(first_name, last_name, email, phone, password);
-        mailService.sendMail(email, first_name);
+        mailService.sendMailRegisterSuccessfully(email, first_name);
 
         return new ResponseEntity<>(generateJWTToken(p), HttpStatus.OK);
     }

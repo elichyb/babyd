@@ -21,9 +21,27 @@ import java.util.Properties;
 public class MailServiceImpl implements MailService{
 
     @Override
-    public void sendMail(String to, String name) {
+    public void sendMailRegisterSuccessfully(String to, String name) {
+        String msg = String.format("Thanks %s,\nfor join to Baby-D app," +
+                "\n" +
+                "Hope you will join to use this app\n" +
+                "If you have any issues/suggestion you can contact us directly\n" +
+                "in mail babyd.team@gmail.com\n" +
+                "Enjoy, \n" +
+                "Baby-D team", name);
+        send(to, msg);
+    }
 
-        // Set required configs
+    @Override
+    public void sendMailBabyAdded(String to, String baby_name) {
+        String msg = String.format("Baby %s\n"+
+                "Added successfully,\n" +
+                "Thanks,\n"+
+                "Baby-D team", baby_name);
+        send(to, msg);
+    }
+
+    public static void send(String to, String msg){
         String from = "babyd.team@gmail.com";
         String host = "smtp.gmail.com";
         String port = "587";
@@ -56,13 +74,7 @@ public class MailServiceImpl implements MailService{
             message.setSubject("Thanks for registration!");
 
             // Set email body
-            message.setText(String.format("Thanks %s,\nfor join to Baby-D app," +
-                    "\n" +
-                    "Hope you will join to use this app\n" +
-                    "If you have any issues/suggestion you can contact us directly\n" +
-                    "in mail babyd.team@gmail.com\n" +
-                    "Enjoy, \n" +
-                    "Baby-D team", name));
+            message.setText(msg);
 
             // Set configs for sending email
             Transport transport = session.getTransport("smtp");
@@ -78,6 +90,5 @@ public class MailServiceImpl implements MailService{
         } catch (javax.mail.MessagingException e) {
             e.printStackTrace();
         }
-
     }
 }

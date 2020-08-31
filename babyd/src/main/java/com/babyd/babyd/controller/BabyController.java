@@ -10,6 +10,7 @@
 
 package com.babyd.babyd.controller;
 
+import com.babyd.babyd.emailHandlers.MailService;
 import com.babyd.babyd.models.Baby;
 import com.babyd.babyd.models.BabyFullInfo;
 import com.babyd.babyd.services.BabyService;
@@ -29,6 +30,9 @@ public class BabyController {
 
     @Autowired
     BabyService babyService;
+
+    @Autowired
+    MailService mailService;
 
     @GetMapping("/get_my_babies")
     public ResponseEntity<List<Baby>> fetchAllBabies(HttpServletRequest request)
@@ -53,13 +57,15 @@ public class BabyController {
                                                        @RequestBody Map<String, Object> babyMap)
     {
         UUID parent_id = UUID.fromString((String) request.getAttribute("parent_id"));
+        String mail = (String) request.getAttribute("email");
         String first_name = (String) babyMap.get("first_name");
         String last_name = (String) babyMap.get("last_name");
         int food_type = (Integer) babyMap.get("food_type");
         String birth_day = (String) babyMap.get("baby_birth_day");
         double weight = Double.parseDouble((String) babyMap.get("weight"));
-
+        mailService.sendMailBabyAdded(mail, first_name);
         Baby baby = babyService.addBaby(parent_id, first_name, last_name, food_type, birth_day, weight);
+
         Map<String,String> map = new HashMap<>();
         map.put("Successfully add baby", baby.getId().toString());
         return new ResponseEntity<>(map, HttpStatus.OK);

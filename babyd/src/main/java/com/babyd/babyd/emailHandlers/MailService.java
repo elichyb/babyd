@@ -11,5 +11,6 @@
 package com.babyd.babyd.emailHandlers;
 
 public interface MailService {
-    void sendMail(String to, String name);
+    void sendMailRegisterSuccessfully(String to, String name);
+    void sendMailBabyAdded(String to, String baby_name);
 }
