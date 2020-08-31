@@ -24,13 +24,13 @@ public class BabyFullInfo {
 
     public BabyFullInfo(String measure_date, String measure_time, double weight, boolean wet_diaper, boolean dirty_diaper, Integer feed_amount,
                         String breast_side, Integer breast_feeding_time_length, Integer sleeping_time, String feed_type) {
+        this.measure_date = measure_date;
+        this.measure_time = measure_time;
+        this.weight = weight;
         this.wet_diaper = wet_diaper;
         this.dirty_diaper = dirty_diaper;
-        this.feed_amount = feed_amount;
-        this.weight = weight;
-        this.measure_time = measure_time;
-        this.measure_date = measure_date;
         this.breast_side = breast_side;
+        this.feed_amount = feed_amount;
         this.breast_feeding_time_length = breast_feeding_time_length;
         this.sleeping_time = sleeping_time;
         this.feed_type = feed_type;
@@ -98,5 +98,21 @@ public class BabyFullInfo {
 
     public void setSleeping_time(Integer sleeping_time) {
         this.sleeping_time = sleeping_time;
+    }
+
+    public boolean isWet_diaper() {
+        return wet_diaper;
+    }
+
+    public void setWet_diaper(boolean wet_diaper) {
+        this.wet_diaper = wet_diaper;
+    }
+
+    public boolean isDirty_diaper() {
+        return dirty_diaper;
+    }
+
+    public void setDirty_diaper(boolean dirty_diaper) {
+        this.dirty_diaper = dirty_diaper;
     }
 }

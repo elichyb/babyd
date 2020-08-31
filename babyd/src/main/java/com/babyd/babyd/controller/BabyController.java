@@ -113,35 +113,39 @@ public class BabyController {
     }
 
     @PostMapping("/set_formula")
-    public ResponseEntity<String> setBabyFormula(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
+    public ResponseEntity<Map<String, String>> setBabyFormula(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
     {
         UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
         String measure_date = (String) babyMap.get("date");
         String measure_time = (String) babyMap.get("time");
-        int amount = Integer.parseInt((String) babyMap.get("amount"));
+        int amount = (int) babyMap.get("amount");
         String feed_type = (String) babyMap.get("feed_type");
 
         babyService.setFormula(baby_id, measure_date, measure_time, amount, feed_type);
-        return new ResponseEntity<>("Feeding set successfully", HttpStatus.OK);
+        Map<String, String> m = new HashMap<>();
+        m.put("Status", "feeding set successfully");
+        return new ResponseEntity<>(m, HttpStatus.OK);
     }
 
     @PostMapping("/set_breast")
-    public ResponseEntity<String> setBabyBreast(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
+    public ResponseEntity<Map<String, String>> setBabyBreast(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
     {
         UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
         String measure_date = (String) babyMap.get("date");
         String measure_time = (String) babyMap.get("time");
         String breast_side = (String) babyMap.get("breast_side");
-        int breast_feeding_time_length = Integer.parseInt((String) babyMap.get("breast_feeding_time_length"));
+        int breast_feeding_time_length = (int) babyMap.get("breast_feeding_time_length");
         String feed_type = (String) babyMap.get("feed_type");
 
         babyService.setBreast(baby_id, measure_date, measure_time, breast_side, breast_feeding_time_length, feed_type);
-        return new ResponseEntity<>("Dipper set successfully", HttpStatus.OK);
+        Map<String, String> m = new HashMap<>();
+        m.put("Status", "feeding set successfully");
+        return new ResponseEntity<>(m, HttpStatus.OK);
     }
 
 
     @PostMapping("/set_sleep")
-    public ResponseEntity<String> setBabySleep(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
+    public ResponseEntity<Map<String,String>> setBabySleep(HttpServletRequest request, @RequestBody Map<String, Object> babyMap)
     {
         UUID baby_id = UUID.fromString((String) babyMap.get("baby_id"));
         String measure_date = (String) babyMap.get("date");
@@ -149,7 +153,9 @@ public class BabyController {
         int sleeping_time = (int) babyMap.get("sleeping_time");
 
         babyService.setSleepingTime(baby_id, measure_date, measure_time, sleeping_time);
-        return new ResponseEntity<>("Dipper set successfully", HttpStatus.OK);
+        Map<String, String> m = new HashMap<>();
+        m.put("Status", "Sleeping set successfully");
+        return new ResponseEntity<>(m, HttpStatus.OK);
     }
 }
 

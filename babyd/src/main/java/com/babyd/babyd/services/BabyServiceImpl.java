@@ -20,6 +20,10 @@ import com.babyd.babyd.repositories.BabyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -69,12 +73,21 @@ public class BabyServiceImpl implements BabyService {
     @Override
     public List<BabyFullInfo> getBabyFullInfoForDate(UUID baby_id, String date) {
         try {
-            babyRepository.getBabyFullInfoForDate(baby_id, date);
+            List<BabyFullInfo> bs = babyRepository.getBabyFullInfoForDate(baby_id, date);
+            if(bs.isEmpty()){
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+                Date parsedDate = formatter.parse(date);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(parsedDate);
+                calendar.add(Calendar.DATE, -1);
+                Date yesterday = calendar.getTime();
+                return babyRepository.getBabyFullInfoForDate(baby_id, formatter.format(yesterday));
+            }
+            return bs;
         }
         catch (Exception e){
             throw new EtResourceNotFoundException("Can't find baby full info in DB");
         }
-        return null;
     }
 
     @Override
